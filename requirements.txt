@@ -1,0 +1,6 @@
+Flask
+Flask-SQLAlchemy
+Flask-GraphQL
+graphene-sqlalchemy
+Flask-Security
+bcrypt
