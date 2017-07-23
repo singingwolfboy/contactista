@@ -74,4 +74,4 @@ def user_from_jwt_request(request):
         key=current_app.config['SECRET_KEY'],
         algorithms=[JWT_ALGORITHM],
     )
-    return User.query.filter(User.id == payload['identity']).scalar()
+    return User.query.get(payload['identity'])
