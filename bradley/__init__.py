@@ -10,10 +10,10 @@ security = Security()
 
 
 DEFAULT_CONFIG = {
+    "SECRET_KEY": "insecure-change-me",
     "SQLALCHEMY_DATABASE_URI": "sqlite:///db.sqlite3",
     "SQLALCHEMY_TRACK_MODIFICATIONS": False,
     "SECURITY_PASSWORD_HASH": "bcrypt",
-    "SECURITY_PASSWORD_SALT": "insecure-change-me",
 }
 
 
