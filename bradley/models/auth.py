@@ -2,6 +2,7 @@ from bradley.models import db
 from flask_security import (
     UserMixin, RoleMixin, SQLAlchemyUserDatastore
 )
+from flask_security.utils import verify_password
 
 
 roles_users = db.Table('roles_users',
@@ -23,6 +24,9 @@ class User(db.Model, UserMixin):
     confirmed_at = db.Column(db.DateTime())
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
+
+    def verify_password(self, password):
+        return verify_password(password, self.password)
 
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
