@@ -1,5 +1,4 @@
 import datetime
-from calendar import timegm
 import jwt
 from flask import current_app
 from bradley.models.auth import User
