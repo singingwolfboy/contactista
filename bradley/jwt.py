@@ -39,21 +39,24 @@ def refresh_jwt_token(token):
         key=current_app.config['SECRET_KEY'],
         algorithms=[JWT_ALGORITHM],
     )
-    user = User.query.get(id=payload['identity'])
+    user = User.query.get(payload['identity'])
+    if not user.active:
+        raise ValueError("User is inactive")
     orig_iat = payload.get('orig_iat')
     if not orig_iat:
-        raise ValueError("orig_iat field is required")
+        raise ValueError("`orig_iat` field is required")
     refresh_limit = orig_iat + int(JWT_REFRESH_EXPIRATION_DELTA.total_seconds())
-    now_ts = datetime.utcnow().timestamp()
+    now_ts = datetime.datetime.utcnow().timestamp()
     if now_ts > refresh_limit:
         raise ValueError("Refresh has expired")
     new_payload = jwt_payload(user)
     new_payload["orig_iat"] = orig_iat
-    return jwt.encode(
+    token = jwt.encode(
         new_payload,
         key=current_app.config['SECRET_KEY'],
         algorithm=JWT_ALGORITHM,
     )
+    return token, user
 
 
 def jwt_token_from_request(request):
