@@ -5,7 +5,6 @@ from bradley.models import db, shell_context
 from bradley.models.auth import user_datastore
 from bradley.views.api import blueprint as api_bp
 from bradley.jwt import user_from_jwt_request
-from bradley.cli import db as cli_db
 
 
 security = Security()

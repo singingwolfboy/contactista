@@ -1,16 +1,9 @@
 import graphene
 from graphene import relay
-from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
 from bradley import models
 from bradley.jwt import jwt_token_for_user
-from flask_security import current_user, login_user
-
-
-class User(SQLAlchemyObjectType):
-    class Meta:
-        model = models.User
-        interfaces = (relay.Node, )
-        exclude_fields = ('password',)
+from flask_security import login_user
+from bradley.schema.types import User
 
 
 class Login(relay.ClientIDMutation):
@@ -43,7 +36,7 @@ class Login(relay.ClientIDMutation):
             return Login(
                 success=False,
                 token=None,
-                errors=['email', 'User is marked inactive, and is unable to log in']
+                errors=['email', 'User account is disabled']
             )
         if not user.verify_password(input['password']):
             return Login(
@@ -61,30 +54,5 @@ class Login(relay.ClientIDMutation):
         )
 
 
-class Role(SQLAlchemyObjectType):
-    class Meta:
-        model = models.Role
-        interfaces = (relay.Node, )
-
-
-class Query(graphene.ObjectType):
-    node = relay.Node.Field()
-    me = graphene.Field(User)
-    all_users = SQLAlchemyConnectionField(User)
-    all_roles = SQLAlchemyConnectionField(Role)
-
-    def resolve_me(self, args, context, info):
-        if current_user.is_authenticated:
-            return current_user._get_current_object()
-        return None
-
-
 class Mutation(graphene.ObjectType):
     login = Login.Field()
-
-
-schema = graphene.Schema(
-    query=Query,
-    mutation=Mutation,
-    types=[User, Role]
-)

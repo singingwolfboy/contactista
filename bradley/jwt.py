@@ -1,4 +1,5 @@
 import datetime
+from calendar import timegm
 import jwt
 from flask import current_app
 from bradley.models.auth import User
@@ -7,18 +8,49 @@ from bradley.models.auth import User
 JWT_HEADER_NAME = 'Authorization'
 JWT_SCHEMA = 'Bearer'
 JWT_ALGORITHM = 'HS256'
-JWT_LIFETIME = datetime.timedelta(days=7)
+JWT_EXPIRATION_DELTA = datetime.timedelta(seconds=300)
+JWT_ALLOW_REFRESH = True
+JWT_REFRESH_EXPIRATION_DELTA = datetime.timedelta(days=7)
+
+
+def jwt_payload(user):
+    now = datetime.datetime.utcnow()
+    payload = {
+        "iat": int(now.timestamp()),
+        "exp": int((now + JWT_EXPIRATION_DELTA).timestamp()),
+        "identity": user.id,
+    }
+    if JWT_ALLOW_REFRESH:
+        payload["orig_iat"] = payload["iat"]
+    return payload
 
 
 def jwt_token_for_user(user):
-    now = datetime.datetime.utcnow()
-    payload = {
-        "iat": now,
-        "exp": now + JWT_LIFETIME,
-        "identity": user.id,
-    }
     return jwt.encode(
-        payload,
+        jwt_payload(user),
+        key=current_app.config['SECRET_KEY'],
+        algorithm=JWT_ALGORITHM,
+    )
+
+
+def refresh_jwt_token(token):
+    payload = jwt.decode(
+        token,
+        key=current_app.config['SECRET_KEY'],
+        algorithms=[JWT_ALGORITHM],
+    )
+    user = User.query.get(id=payload['identity'])
+    orig_iat = payload.get('orig_iat')
+    if not orig_iat:
+        raise ValueError("orig_iat field is required")
+    refresh_limit = orig_iat + int(JWT_REFRESH_EXPIRATION_DELTA.total_seconds())
+    now_ts = datetime.utcnow().timestamp()
+    if now_ts > refresh_limit:
+        raise ValueError("Refresh has expired")
+    new_payload = jwt_payload(user)
+    new_payload["orig_iat"] = orig_iat
+    return jwt.encode(
+        new_payload,
         key=current_app.config['SECRET_KEY'],
         algorithm=JWT_ALGORITHM,
     )
