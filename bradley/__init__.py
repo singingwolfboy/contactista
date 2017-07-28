@@ -1,13 +1,9 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_security import Security
-from bradley.models import db, shell_context
+from bradley.models import db, security, shell_context
 from bradley.models.auth import user_datastore
 from bradley.views.api import blueprint as api_bp
+from bradley.admin import admin, admin_context
 from bradley.jwt import user_from_jwt_request
-
-
-security = Security()
 
 
 DEFAULT_CONFIG = {
@@ -25,6 +21,8 @@ def create_app():
     db.init_app(app)
     state = security.init_app(app, datastore=user_datastore)
     state.login_manager.request_loader(user_from_jwt_request)
+    state.context_processor(admin_context)
+    admin.init_app(app)
     app.shell_context_processor(shell_context)
     app.register_blueprint(api_bp)
     return app

@@ -3,7 +3,9 @@
 # and initialize it.
 
 from flask_sqlalchemy import SQLAlchemy
+from flask_security import Security
 db = SQLAlchemy()
+security = Security()
 
 # All the application models depend on this `db` instance, so we can't
 # import them until *after* we've initialized it. That's why the model

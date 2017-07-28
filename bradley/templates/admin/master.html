@@ -1,0 +1,20 @@
+{% extends admin_base_template %}
+{% block access_control %}
+<ul class="nav navbar-nav navbar-right">
+  <li class="dropdown">
+    {% if current_user.is_anonymous %}
+      <a href="{{ url_for("security.login") }}" class="navbar-link">
+        Log in
+      </a>
+    {% else %}
+      <a href="#" class="dropdown-toggle dropdown-login" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+        {{ current_user.email }}
+        <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a href="{{ url_for("security.logout") }}">Log Out</a></li>
+      </ul>
+    {% endif %}
+  </li>
+</ul>
+{% endblock %}

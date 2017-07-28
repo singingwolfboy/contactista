@@ -1,0 +1,16 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+  {% if current_user.is_anonymous %}
+    Please log in to view the admin.
+  {% else %}
+    You currently have the following roles:
+    <ul>
+      {% for role in current_user.roles %}
+        <li>{{ role }}</li>
+      {% else %}
+        <li><em>no roles defined</em></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endblock %}
