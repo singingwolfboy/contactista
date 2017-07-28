@@ -21,7 +21,7 @@ class Role(db.Model, RoleMixin):
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True)
+    username = db.Column(db.String(255), unique=True, index=True)
     password = db.Column(db.String(255))
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime())
@@ -35,7 +35,7 @@ class User(db.Model, UserMixin):
         return verify_password(password, self.password)
 
     def __str__(self):
-        return self.email
+        return self.username
 
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)

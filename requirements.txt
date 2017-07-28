@@ -2,9 +2,10 @@ Flask
 # Flask-SQLAlchemy
 Flask-GraphQL
 graphene-sqlalchemy
-Flask-Security
+# Flask-Security
 Flask-Admin
 bcrypt
 PyJWT
 
 git+https://github.com/singingwolfboy/flask-sqlalchemy.git@cli#egg=Flask-SQLAlchemy
+git+https://github.com/singingwolfboy/flask-security.git@cli-roles-add-username-identity#egg=Flask-Security

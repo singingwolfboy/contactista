@@ -46,7 +46,7 @@ def admin_context():
 class UserView(ModelView):
     column_exclude_list = ('password',)
     column_auto_select_related = True
-    form_columns = ('email', 'new_password', 'roles', 'active', 'confirmed_at')
+    form_columns = ('username', 'new_password', 'roles', 'active', 'confirmed_at')
     form_extra_fields = {
         'new_password': PasswordField('Password')
     }

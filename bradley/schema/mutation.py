@@ -13,7 +13,7 @@ class Login(relay.ClientIDMutation):
     Mutation to login a user
     """
     class Input:
-        email = graphene.String(required=True)
+        username = graphene.String(required=True)
         password = graphene.String(required=True)
 
     success = graphene.Boolean()
@@ -25,18 +25,18 @@ class Login(relay.ClientIDMutation):
     def mutate_and_get_payload(cls, input, context, info):
         user = (
             models.User.query
-            .filter(models.User.email == input['email'])
+            .filter(models.User.username == input['username'])
             .scalar()
         )
         if not user:
             return Login(
                 success=False,
-                error=['email', 'No user exists for that email address']
+                error=['username', 'Specified user does not exist']
             )
         if not user.active:
             return Login(
                 success=False,
-                error=['email', 'User account is disabled']
+                error=['username', 'Account is disabled']
             )
         if not user.verify_password(input['password']):
             return Login(
