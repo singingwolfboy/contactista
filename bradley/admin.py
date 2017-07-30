@@ -4,7 +4,10 @@ from flask_admin.contrib.sqla import ModelView as BaseModelView
 from flask_admin import helpers as admin_helpers
 from wtforms import PasswordField
 from flask_security import current_user, login_required
-from bradley.models import db, security, User, Role
+from bradley.models import (
+    db, security, User, Role,
+    Contact, ContactName, ContactPronouns, ContactEmail
+)
 
 
 admin = Admin(template_mode='bootstrap3')
@@ -46,7 +49,9 @@ def admin_context():
 class UserView(ModelView):
     column_exclude_list = ('password',)
     column_auto_select_related = True
-    form_columns = ('username', 'new_password', 'roles', 'active', 'confirmed_at')
+    form_columns = (
+        'username', 'new_password', 'roles', 'active', 'confirmed_at'
+    )
     form_extra_fields = {
         'new_password': PasswordField('Password')
     }
@@ -55,5 +60,12 @@ class UserView(ModelView):
         if getattr(model, "new_password"):
             model.set_password(model.new_password)
 
+
+class ContactView(ModelView):
+    column_auto_select_related = True
+    inline_models = (ContactName, ContactPronouns, ContactEmail)
+
+
 admin.add_view(UserView(User, db.session))
 admin.add_view(ModelView(Role, db.session))
+admin.add_view(ContactView(Contact, db.session))

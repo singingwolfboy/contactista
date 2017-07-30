@@ -1,5 +1,5 @@
 from flask import Flask
-from bradley.models import db, security, shell_context
+from bradley.models import db, alembic, security, shell_context
 from bradley.models.auth import user_datastore
 from bradley.views.api import blueprint as api_bp
 from bradley.admin import admin, admin_context
@@ -20,6 +20,7 @@ def create_app():
     app = Flask(__name__)
     app.config.update(DEFAULT_CONFIG)
     db.init_app(app)
+    alembic.init_app(app)
     state = security.init_app(app, datastore=user_datastore)
     state.login_manager.request_loader(user_from_jwt_request)
     state.context_processor(admin_context)
