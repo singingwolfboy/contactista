@@ -8,4 +8,4 @@ bcrypt
 PyJWT
 
 git+https://github.com/singingwolfboy/flask-sqlalchemy.git@cli#egg=Flask-SQLAlchemy
-git+https://github.com/singingwolfboy/flask-security.git@cli-roles-add-username-identity#egg=Flask-Security
+git+https://github.com/singingwolfboy/flask-security.git@username-identity#egg=Flask-Security
