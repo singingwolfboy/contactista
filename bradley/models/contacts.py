@@ -29,7 +29,7 @@ class Contact(db.Model):
         order_by="ContactEmail.position",
         collection_class=ordering_list("position")
     )
-    emails = association_proxy("contact_emails", "emails")
+    emails = association_proxy("contact_emails", "email")
 
     def __str__(self):
         if self.names:
