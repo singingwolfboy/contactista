@@ -9,7 +9,7 @@ from bradley.jwt import user_from_jwt_request
 DEFAULT_CONFIG = {
     "SECRET_KEY": "insecure-change-me",
     "SECURITY_PASSWORD_SALT": "insecure-change-me",
-    "SQLALCHEMY_DATABASE_URI": "sqlite:///db.sqlite3",
+    "SQLALCHEMY_DATABASE_URI": "postgresql://localhost",
     "SQLALCHEMY_TRACK_MODIFICATIONS": False,
     "SECURITY_PASSWORD_HASH": "bcrypt",
     "SECURITY_USER_IDENTITY_ATTRIBUTES": ["username"],

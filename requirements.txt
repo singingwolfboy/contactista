@@ -8,6 +8,7 @@ bcrypt
 PyJWT
 SQLAlchemy-Continuum
 Flask-Alembic
+psycopg2
 
 git+https://github.com/singingwolfboy/flask-sqlalchemy.git@cli#egg=Flask-SQLAlchemy
 git+https://github.com/singingwolfboy/flask-security.git@username-identity#egg=Flask-Security
