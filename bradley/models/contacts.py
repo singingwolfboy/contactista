@@ -1,6 +1,5 @@
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy import select, func
 from bradley.models import db
 from bradley.models.auth import User
 from bradley.models.shared import Pronouns
@@ -11,8 +10,18 @@ class Contact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     user = db.relationship(User, backref=db.backref("contacts"))
-    notes = db.Column(db.Text)
-    notes_format = db.Column(db.String(20), default="text")
+    notes = db.Column(
+        db.Text,
+        doc="Personal notes that the user made about this contact"
+    )
+    # `notes_format` should probably be SQLAlchemy-Utils `ChoiceType`,
+    # but Graphene has a bug with converting `ChoiceType`,
+    # so this is a String instead.
+    # https://github.com/graphql-python/graphene-sqlalchemy/issues/9
+    notes_format = db.Column(
+        db.String(20), default="text",
+        doc="Markup format for notes field. One of: text, markdown"
+    )
     contact_pronouns = db.relationship(
         "ContactPronouns",
         order_by="ContactPronouns.position",
@@ -47,7 +56,7 @@ class Contact(db.Model):
     @property
     def pronouns(self):
         """
-        Get the primary set of pronouns that this contact users.
+        The primary set of pronouns that this contact uses.
         """
         if not self.pronouns_list:
             return None
@@ -64,9 +73,8 @@ class Contact(db.Model):
     @property
     def name(self):
         """
-        Get the primary name for this contact if it exists,
+        The primary name for this contact if it exists,
         or the first name in the name order if not.
-        Returns None if the contact has no names set at all.
         """
         if not self.names:
             return None
@@ -83,9 +91,8 @@ class Contact(db.Model):
     @property
     def email(self):
         """
-        Get the primary email for this contact if it exists,
+        The primary email for this contact if it exists,
         or the first email in the email order if not.
-        Returns None if the contact has no emails set at all.
         """
         if not self.emails:
             return None

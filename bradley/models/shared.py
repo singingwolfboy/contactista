@@ -23,4 +23,3 @@ class Pronouns(db.Model):
             poss=self.possessive_pronoun,
             reflex=self.reflexive_pronoun,
         )
-

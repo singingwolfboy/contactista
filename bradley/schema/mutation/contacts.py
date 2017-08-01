@@ -1,11 +1,20 @@
+import json
 import graphene
 from graphene import relay
 from flask_security import current_user
-from bradley.models import db, Contact, ContactName, ContactPronouns, ContactEmail
+from bradley.models import db, Contact, Pronouns
 from bradley.schema.types import Pronouns as PronounsType
 from bradley.schema.types import Contact as ContactType
-from bradley.schema.types import ContactName as ContactNameType
-from bradley.schema.types import ContactEmail as ContactEmailType
+from .input import PronounsInput, ContactNameInput, ContactEmailInput
+
+
+def pronouns_from_dict(pronouns_dict):
+    p = Pronouns.query.filter_by(**pronouns_dict).first()
+    if not p:
+        raise ValueError("Unknown pronouns: {json}".format(
+            json=json.dumps(pronouns_dict)
+        ))
+    return p
 
 
 class CreateContact(relay.ClientIDMutation):
@@ -13,9 +22,12 @@ class CreateContact(relay.ClientIDMutation):
     Mutation to register a new user
     """
     class Input:
-        names = graphene.List(ContactNameType, required=True)
-        pronouns_ids = graphene.List(graphene.Int, required=True)
-        emails = graphene.List(ContactEmailType, required=True)
+        pronouns = graphene.Field(PronounsInput)
+        pronouns_list = graphene.List(PronounsInput)
+        name = graphene.String()
+        names = graphene.List(ContactNameInput)
+        email = graphene.String()
+        emails = graphene.List(ContactEmailInput)
 
     success = graphene.Boolean()
     errors = graphene.List(graphene.String)
@@ -28,34 +40,57 @@ class CreateContact(relay.ClientIDMutation):
                 success=False,
                 errors=["Authentication required"]
             )
+
+        pronouns = input.get('pronouns', None)
+        pronouns_list = [p for p in input.get('pronouns_list', []) if p]
+        name = input.get('name', None)
+        names = input.get('name_list', [])
+        email = input.get('email', None)
+        emails = input.get('emails', [])
+
+        # we need at least one set of pronouns, at least one name,
+        # and at least one email.
+        errors = []
+        if not pronouns and not pronouns_list:
+            errors.append("At least one set of pronouns is required.")
+        if pronouns:
+            try:
+                pronouns = pronouns_from_dict(pronouns)
+            except ValueError as err:
+                errors.append(err.args[0])
+        if pronouns_list:
+            try:
+                pronouns_list = [pronouns_from_dict(d) for d in pronouns_list]
+            except ValueError as err:
+                errors.append(err.args[0])
+
+        if not input.get('name') and not input.get('names'):
+            errors.append("At least one name is required.")
+        if not input.get('email') and not input.get('emails'):
+            errors.append("At least one email address is required.")
+        if errors:
+            return CreateContact(
+                success=False,
+                errors=errors,
+            )
+
         contact = Contact(user=current_user)
-        for name_info in input['names']:
-            if isinstance(name_info, str):
-                cn = ContactName(
-                    name=name_info,
-                    category="default",
-                )
-            else:
-                cn = ContactName(
-                    name=name_info['name'],
-                    category=name_info['category'],
-                )
-            contact.contact_names.append(cn)
-        for email_info in input['emails']:
-            if isinstance(email_info, str):
-                ce = ContactEmail(
-                    email=email_info,
-                    category="default",
-                )
-            else:
-                ce = ContactEmail(
-                    email=email_info['email'],
-                    category=email_info['category'],
-                )
-            contact.contact_emails.append(ce)
-        for pronouns_id in input['pronouns_ids']:
-            cp = ContactPronouns(pronouns_id=pronouns_id)
-            contact.contact_pronouns.append(cp)
+        if pronouns:
+            contact.pronouns = pronouns
+        if pronouns_list:
+            contact.pronouns_list = pronouns_list
+
+        if name:
+            contact.name = name
+        if names:
+            for name_info in names:
+                contact.names[name_info['category']] = name_info['name']
+
+        if email:
+            contact.email = email
+        if emails:
+            for email_info in emails:
+                contact.emails[email_info['category']] = email_info['email']
 
         db.session.add(contact)
         db.session.commit()
