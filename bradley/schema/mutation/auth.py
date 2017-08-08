@@ -1,12 +1,13 @@
 import re
 import graphene
 from graphene import relay
+from bradley.serializers import UserSerializer
 from bradley.models import db, User
 from bradley.jwt import (
     jwt_token_for_user, jwt_token_from_request, refresh_jwt_token
 )
 from flask_security import login_user
-from bradley.schema.types import User as UserType
+from bradley.schema.types import User as UserType, UserError
 
 
 class Register(relay.ClientIDMutation):
@@ -18,28 +19,29 @@ class Register(relay.ClientIDMutation):
         password = graphene.String(required=True)
 
     success = graphene.Boolean()
-    errors = graphene.List(graphene.String)
+    errors = graphene.List(UserError)
     token = graphene.String()
     user = graphene.Field(UserType)
 
     @classmethod
     def mutate_and_get_payload(cls, input, context, info):
-        username = input['username']
-        if not re.match(r"[A-Za-z0-9_]+", username):
+        result = UserSerializer().load(input)
+        if result.errors:
             return Register(
                 success=False,
-                errors=['username', 'Invalid username']
+                errors=UserError.from_marshmallow(result.errors),
             )
         user_exists = db.session.query(
-            User.query.filter(User.username == username).exists()
+            User.query.filter(User.username == input['username']).exists()
         ).scalar()
         if user_exists:
             return Register(
                 success=False,
-                errors=['username', 'Username already in use']
+                errors=[UserError(
+                    field="username", message="Username already in use"
+                )]
             )
-        user = User(username=username, active=False)
-        user.set_password(input['password'])
+        user = result.data
         db.session.add(user)
         db.session.commit()
         return Register(
@@ -58,7 +60,7 @@ class Login(relay.ClientIDMutation):
         password = graphene.String(required=True)
 
     success = graphene.Boolean()
-    errors = graphene.List(graphene.String)
+    errors = graphene.List(graphene.UserError)
     token = graphene.String()
     user = graphene.Field(UserType)
 
@@ -72,17 +74,23 @@ class Login(relay.ClientIDMutation):
         if not user:
             return Login(
                 success=False,
-                errors=['username', 'Specified user does not exist']
+                errors=[
+                    UserError('username', 'Specified user does not exist')
+                ]
             )
         if not user.active:
             return Login(
                 success=False,
-                errors=['username', 'Account is disabled']
+                errors=[
+                    UserError('username', 'Account is disabled')
+                ]
             )
         if not user.verify_password(input['password']):
             return Login(
                 success=False,
-                errors=['password', 'Invalid password']
+                errors=[
+                    UserError('password', 'Invalid password')
+                ]
             )
         # Login was successful!
         login_user(user)

@@ -1,8 +1,24 @@
 import graphene
-from graphene import relay, InputObjectType
+from graphene import relay, ObjectType, InputObjectType
 from graphene.utils.trim_docstring import trim_docstring
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from bradley import models
+
+
+class UserError(ObjectType):
+    """
+    For displaying mutation errors to the user.
+    """
+    field = graphene.String()
+    message = graphene.String()
+
+    @classmethod
+    def from_marshmallow(cls, errors):
+        return [
+            cls(field=field, message=message)
+            for field, messages in errors.items()
+            for message in messages
+        ]
 
 
 class User(SQLAlchemyObjectType):

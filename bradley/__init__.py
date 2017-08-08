@@ -1,6 +1,8 @@
 from flask import Flask
-from bradley.models import db, alembic, security, shell_context
+from bradley.models import db, alembic, security
+from bradley.models import shell_context as shell_context_models
 from bradley.models.auth import user_datastore
+from bradley.serializers import shell_context as shell_context_serializers
 from bradley.views.api import blueprint as api_bp
 from bradley.admin import admin, admin_context
 from bradley.jwt import user_from_jwt_request
@@ -25,6 +27,7 @@ def create_app():
     state.login_manager.request_loader(user_from_jwt_request)
     state.context_processor(admin_context)
     admin.init_app(app)
-    app.shell_context_processor(shell_context)
+    app.shell_context_processor(shell_context_models)
+    app.shell_context_processor(shell_context_serializers)
     app.register_blueprint(api_bp)
     return app
