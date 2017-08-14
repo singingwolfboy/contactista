@@ -60,7 +60,7 @@ class Login(relay.ClientIDMutation):
         password = graphene.String(required=True)
 
     success = graphene.Boolean()
-    errors = graphene.List(graphene.UserError)
+    errors = graphene.List(UserError)
     token = graphene.String()
     user = graphene.Field(UserType)
 

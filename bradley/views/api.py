@@ -1,6 +1,12 @@
 from flask import Blueprint
-from flask_graphql import GraphQLView
+from flask_graphql import GraphQLView as BaseGraphQLView
+from flask_login import current_user
 from bradley.schema import schema
+
+
+class GraphQLView(BaseGraphQLView):
+    def get_root_value(self, request):
+        return current_user
 
 
 blueprint = Blueprint('api', __name__)
