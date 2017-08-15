@@ -6,6 +6,10 @@ from bradley.models.shared import Pronouns
 from bradley.models.util import CategoryMap
 
 
+# relationship cascade, needed to allow deleting from category maps
+cascade = "save-update, merge, delete, delete-orphan"
+
+
 class Contact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
@@ -26,7 +30,7 @@ class Contact(db.Model):
         "ContactPronouns",
         order_by="ContactPronouns.position",
         collection_class=ordering_list("position"),
-        cascade="save-update, merge, delete, delete-orphan",
+        cascade=cascade,
     )
     pronouns_list = association_proxy(
         "contact_pronouns", "pronouns",
@@ -36,7 +40,12 @@ class Contact(db.Model):
         "ContactName",
         order_by="ContactName.position",
         collection_class=CategoryMap,
-        cascade="save-update, merge, delete, delete-orphan",
+        cascade=cascade,
+    )
+    contact_names_list = db.relationship(
+        "ContactName",
+        order_by="ContactName.position",
+        cascade=cascade,
     )
     names = association_proxy(
         "contact_names", "name",
@@ -46,7 +55,12 @@ class Contact(db.Model):
         "ContactEmail",
         order_by="ContactEmail.position",
         collection_class=CategoryMap,
-        cascade="save-update, merge, delete, delete-orphan",
+        cascade=cascade,
+    )
+    contact_emails_list = db.relationship(
+        "ContactEmail",
+        order_by="ContactEmail.position",
+        cascade=cascade,
     )
     emails = association_proxy(
         "contact_emails", "email",

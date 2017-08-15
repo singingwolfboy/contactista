@@ -6,6 +6,8 @@ from marshmallow_sqlalchemy.fields import get_schema_for_field
 from sqlalchemy.orm.exc import NoResultFound
 from bradley.models import db
 from bradley.models.auth import User, Role
+from bradley.models.contacts import Contact, ContactName, ContactEmail, ContactPronouns
+from bradley.models.shared import Pronouns
 
 
 class BaseOpts(ModelSchemaOpts):
@@ -78,6 +80,64 @@ class UserSerializer(ModelSchema):
         return user
 
 
+class PronounsSerializer(ModelSchema):
+    class Meta:
+        model = Pronouns
+
+
+class ContactNameSerializer(ModelSchema):
+    class Meta:
+        model = ContactName
+        fields = ('category', 'name')
+
+
+class ContactEmailSerializer(ModelSchema):
+    class Meta:
+        model = ContactEmail
+        fields = ('category', 'email')
+
+
+class PronounsSerializer(ModelSchema):
+    class Meta:
+        model = Pronouns
+        exclude = ('id', 'position')
+
+
+class ContactPronounsSerializer(ModelSchema):
+    pronouns = fields.Nested(PronounsSerializer)
+
+    class Meta:
+        model = ContactPronouns
+
+
+class ContactSerializer(ModelSchema):
+    user = fields.Nested(UserSerializer)
+    names = fields.Nested(
+        ContactNameSerializer,
+        exclude=('contact',),
+        many=True,
+        attribute="contact_names_list",
+    )
+    emails = fields.Nested(
+        ContactEmailSerializer,
+        exclude=('contact',),
+        many=True,
+        attribute="contact_emails_list",
+    )
+    pronouns_list = fields.Nested(
+        PronounsSerializer,
+        many=True,
+        attribute="pronouns_list",
+    )
+
+    class Meta:
+        model = Contact
+        fields = (
+            'user', 'notes', 'notes_format',
+            'names', 'emails', 'pronouns_list',
+        )
+
+
 def shell_context():
     """
     This function is called when you run `flask shell`. It makes sure that
@@ -87,4 +147,6 @@ def shell_context():
     return {
         "UserSerializer": UserSerializer,
         "RoleSerializer": RoleSerializer,
+        "ContactSerializer": ContactSerializer,
+        "PronounsSerializer": PronounsSerializer,
     }
