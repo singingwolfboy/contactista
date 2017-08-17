@@ -3,7 +3,7 @@ from marshmallow import fields, post_load, validates, ValidationError
 from marshmallow_sqlalchemy import ModelSchemaOpts, ModelSchema as BaseModelSchema
 from marshmallow_sqlalchemy import field_for
 from marshmallow_sqlalchemy.fields import get_schema_for_field
-from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from bradley.models import db
 from bradley.models.auth import User, Role
 from bradley.models.contacts import Contact, ContactName, ContactEmail, ContactPronouns
@@ -135,6 +135,93 @@ class ContactSerializer(ModelSchema):
         fields = (
             'user', 'notes', 'notes_format',
             'names', 'emails', 'pronouns_list',
+        )
+
+    @post_load(pass_original=True)
+    def set_name(self, contact, original_data):
+        name = original_data.get("name")
+        if name:
+            contact.name = name
+        return contact
+
+    @post_load(pass_original=True)
+    def set_email(self, contact, original_data):
+        email = original_data.get("email")
+        if email:
+            contact.email = email
+        return contact
+
+    @post_load(pass_original=True)
+    def set_pronouns(self, contact, original_data):
+        subject_pronoun = original_data.get("pronoun")
+        if subject_pronoun:
+            if not isinstance(subject_pronoun, str):
+                raise ValidationError("Pronoun must be a string")
+            contact.pronouns = get_pronouns_by_subject(subject_pronoun)
+
+        filters = original_data.get("pronouns")
+        if filters:
+            if isinstance(filters, list) and all(isinstance(f, str) for f in filters):
+                contact.pronouns_list = [get_pronouns_by_subject(f) for f in filters]
+            elif isinstance(filters, dict):
+                contact.pronouns = get_pronouns_by_filters(filters)
+            else:
+                raise ValidationError(
+                    "Pronouns must be a list of subject pronoun strings, "
+                    "or an object of pronoun types."
+                )
+
+        return contact
+
+
+def get_pronouns_by_subject(subject_pronoun):
+    """
+    Given a subject pronoun (as a string), return the Pronouns object
+    that corresponds to that subject pronoun. This can be called with
+    strings like "he", "she", and "it".
+
+    If no Pronouns object is found that matches this subject pronoun, or
+    there are multiple Pronouns objects that match, a ValidationError is raised.
+    """
+    try:
+        return Pronouns.query.filter_by(subject=subject_pronoun).one()
+    except NoResultFound:
+        raise ValidationError(
+            'No set of pronouns found for subject pronoun "{subject}"'.format(
+                subject=subject_pronoun
+            )
+        )
+    except MultipleResultsFound:
+        raise ValidationError(
+            'Multiple sets of pronouns found for subject pronoun '
+            '"{subject}". Use more specific filters.'.format(
+                subject=subject_pronoun
+            )
+        )
+
+
+def get_pronouns_by_filters(filters):
+    """
+    Given a dictionary of pronoun filters, return the Pronouns object
+    that corresponds to those pronouns pronoun. Some examples:
+
+    {"subject": "he"}
+    {"subject": "they", "reflexive": "themself"}
+    {"subject": "they", "reflexive": "themselves"}
+    {"possessive": "hers"}
+
+    If no Pronouns object is found that matches these filters, or
+    there are multiple Pronouns objects that match, a ValidationError is raised.
+    """
+    try:
+        return Pronouns.query.filter_by(**filters).one()
+    except NoResultFound:
+        raise ValidationError(
+            "No set of pronouns found for filters."
+        )
+    except MultipleResultsFound:
+        raise ValidationError(
+            "Multiple sets of pronouns found. Use more specific filters."
         )
 
 

@@ -2,11 +2,11 @@ import graphene
 
 
 class PronounsInput(graphene.InputObjectType):
-    subject_pronoun = graphene.String()
-    object_pronoun = graphene.String()
+    subject = graphene.String()
+    object = graphene.String()
     possessive_determiner = graphene.String()
-    possessive_pronoun = graphene.String()
-    reflexive_pronoun = graphene.String()
+    possessive = graphene.String()
+    reflexive = graphene.String()
 
 
 class ContactNameInput(graphene.InputObjectType):

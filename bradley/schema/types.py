@@ -40,6 +40,16 @@ class Pronouns(SQLAlchemyObjectType):
         interfaces = (relay.Node,)
 
 
+class ContactName(ObjectType):
+    name = graphene.String()
+    category = graphene.String()
+
+
+class ContactEmail(ObjectType):
+    email = graphene.String()
+    category = graphene.String()
+
+
 class Contact(SQLAlchemyObjectType):
     class Meta:
         model = models.Contact
@@ -58,9 +68,17 @@ class Contact(SQLAlchemyObjectType):
         category=graphene.String(),
         description=trim_docstring(models.Contact.name.__doc__)
     )
+    names = graphene.Field(
+        graphene.List(ContactName),
+        description=trim_docstring(models.Contact.contact_names_list.__doc__)
+    )
     email = graphene.String(
         category=graphene.String(),
         description=trim_docstring(models.Contact.email.__doc__)
+    )
+    emails = graphene.Field(
+        graphene.List(ContactEmail),
+        description=trim_docstring(models.Contact.contact_names_list.__doc__)
     )
 
     def resolve_pronouns_list(self, args, context, info):
@@ -75,8 +93,14 @@ class Contact(SQLAlchemyObjectType):
             return self.names.get(category, None)
         return self.name
 
+    def resolve_names(self, args, context, info):
+        return self.contact_names_list
+
     def resolve_email(self, args, context, info):
         category = args.get('category')
         if category:
             return self.emails.get(category, None)
         return self.email
+
+    def resolve_emails(self, args, context, info):
+        return self.contact_emails_list
