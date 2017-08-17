@@ -14,6 +14,8 @@ and GraphQL_. But that's the eventual goal.
 Install & Run
 -------------
 
+Make sure you have a local PostgreSQL_ server running. Then run:
+
 .. code-block:: bash
 
     pip install -r requirements.txt
@@ -22,3 +24,5 @@ Install & Run
     flask run
 
 You can run ``flask --help`` to see what other commands are available.
+
+.. _PostgreSQL: https://www.postgresql.org/
