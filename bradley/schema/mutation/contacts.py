@@ -60,7 +60,7 @@ class MutateContact(relay.ClientIDMutation):
     Mutation to modify an existing contact
     """
     class Input:
-        id = graphene.Int(required=True)
+        contact_id = graphene.Int(required=True)
         pronoun = graphene.String()
         pronouns = graphene.Field(PronounsInput)
         pronouns_list = graphene.List(PronounsInput)
@@ -83,7 +83,7 @@ class MutateContact(relay.ClientIDMutation):
                 errors=[UserError(field="", message="Authentication required")]
             )
 
-        contact_id = input.get('id')
+        contact_id = input['contact_id']
         contact = Contact.query.get(contact_id)
         if not contact or contact.user != current_user:
             return MutateContact(
@@ -117,7 +117,7 @@ class DestroyContact(relay.ClientIDMutation):
     Mutation to delete an existing contact
     """
     class Input:
-        id = graphene.Int(required=True)
+        contact_id = graphene.Int(required=True)
 
     success = graphene.Boolean()
     errors = graphene.List(UserError)
@@ -131,7 +131,7 @@ class DestroyContact(relay.ClientIDMutation):
                 errors=[UserError(field="", message="Authentication required")]
             )
 
-        contact_id = input.get('id')
+        contact_id = input['contact_id']
         contact = Contact.query.get(contact_id)
         if not contact or contact.user != current_user:
             return DestroyContact(
