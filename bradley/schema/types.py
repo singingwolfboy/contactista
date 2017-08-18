@@ -22,16 +22,25 @@ class UserError(ObjectType):
 
 
 class User(SQLAlchemyObjectType):
+    user_id = graphene.Int()
+
     class Meta:
         model = models.User
         interfaces = (relay.Node,)
         exclude_fields = ('password',)
 
+    def resolve_user_id(self, args, context, info):
+        return self.id
 
 class Role(SQLAlchemyObjectType):
+    role_id = graphene.Int()
+
     class Meta:
         model = models.Role
         interfaces = (relay.Node,)
+
+    def resolve_role_id(self, args, context, info):
+        return self.id
 
 
 class Pronouns(SQLAlchemyObjectType):
@@ -51,9 +60,14 @@ class ContactEmail(ObjectType):
 
 
 class Contact(SQLAlchemyObjectType):
+    contact_id = graphene.Int()
+
     class Meta:
         model = models.Contact
         interfaces = (relay.Node,)
+
+    def resolve_contact_id(self, args, context, info):
+        return self.id
 
     # add relationships and proxies
     pronouns_list = graphene.Field(

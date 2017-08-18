@@ -10,7 +10,7 @@ from .input import PronounsInput, ContactNameInput, ContactEmailInput
 
 class CreateContact(relay.ClientIDMutation):
     """
-    Mutation to register a new user
+    Mutation to create a new contact
     """
     class Input:
         pronoun = graphene.String()
@@ -35,7 +35,9 @@ class CreateContact(relay.ClientIDMutation):
                 errors=[UserError(field="", message="Authentication required")]
             )
 
-        result = ContactSerializer(exclude=['user']).load(input)
+        serializer = ContactSerializer(exclude=['user'])
+        result = serializer.load(input)
+
         if result.errors:
             return CreateContact(
                 success=False,
@@ -48,6 +50,102 @@ class CreateContact(relay.ClientIDMutation):
         db.session.commit()
 
         return CreateContact(
+            success=True,
+            contact=contact,
+        )
+
+
+class MutateContact(relay.ClientIDMutation):
+    """
+    Mutation to modify an existing contact
+    """
+    class Input:
+        id = graphene.Int(required=True)
+        pronoun = graphene.String()
+        pronouns = graphene.Field(PronounsInput)
+        pronouns_list = graphene.List(PronounsInput)
+        name = graphene.String()
+        names = graphene.List(ContactNameInput)
+        email = graphene.String()
+        emails = graphene.List(ContactEmailInput)
+        notes = graphene.String()
+        notes_format = graphene.String()
+
+    success = graphene.Boolean()
+    errors = graphene.List(UserError)
+    contact = graphene.Field(ContactType)
+
+    @classmethod
+    def mutate_and_get_payload(cls, input, context, info):
+        if current_user.is_anonymous:
+            return MutateContact(
+                success=False,
+                errors=[UserError(field="", message="Authentication required")]
+            )
+
+        contact_id = input.get('id')
+        contact = Contact.query.get(contact_id)
+        if not contact or contact.user != current_user:
+            return MutateContact(
+                success=False,
+                errors=[UserError(
+                    field="clientMutationId",
+                    message="Contact not found"
+                )]
+            )
+
+        serializer = ContactSerializer(exclude=['user'])
+        result = serializer.load(input, instance=contact)
+
+        if result.errors:
+            return CreateContact(
+                success=False,
+                errors=UserError.from_marshmallow(result.errors)
+            )
+
+        db.session.add(result.data)
+        db.session.commit()
+
+        return MutateContact(
+            success=True,
+            contact=contact,
+        )
+
+
+class DestroyContact(relay.ClientIDMutation):
+    """
+    Mutation to delete an existing contact
+    """
+    class Input:
+        id = graphene.Int(required=True)
+
+    success = graphene.Boolean()
+    errors = graphene.List(UserError)
+    contact = graphene.Field(ContactType)
+
+    @classmethod
+    def mutate_and_get_payload(cls, input, context, info):
+        if current_user.is_anonymous:
+            return DestroyContact(
+                success=False,
+                errors=[UserError(field="", message="Authentication required")]
+            )
+
+        contact_id = input.get('id')
+        contact = Contact.query.get(contact_id)
+        if not contact or contact.user != current_user:
+            return DestroyContact(
+                success=False,
+                errors=[UserError(
+                    field="clientMutationId",
+                    message="Contact not found"
+                )]
+            )
+
+        db.session.delete(contact)
+        db.session.commit()
+
+        return DestroyContact(
             success=True,
             contact=contact,
         )
