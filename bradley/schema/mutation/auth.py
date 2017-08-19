@@ -27,7 +27,7 @@ class Register(relay.ClientIDMutation):
     def mutate_and_get_payload(cls, input, context, info):
         result = UserSerializer().load(input)
         if result.errors:
-            return Register(
+            return cls(
                 success=False,
                 errors=UserError.from_marshmallow(result.errors),
             )
@@ -35,7 +35,7 @@ class Register(relay.ClientIDMutation):
             User.query.filter(User.username == input['username']).exists()
         ).scalar()
         if user_exists:
-            return Register(
+            return cls(
                 success=False,
                 errors=[UserError(
                     field="username", message="Username already in use"
@@ -44,7 +44,7 @@ class Register(relay.ClientIDMutation):
         user = result.data
         db.session.add(user)
         db.session.commit()
-        return Register(
+        return cls(
             success=True,
             token=jwt_token_for_user(user).decode('utf8'),
             user=user,
@@ -72,21 +72,21 @@ class Login(relay.ClientIDMutation):
             .scalar()
         )
         if not user:
-            return Login(
+            return cls(
                 success=False,
                 errors=[
                     UserError('username', 'Specified user does not exist')
                 ]
             )
         if not user.active:
-            return Login(
+            return cls(
                 success=False,
                 errors=[
                     UserError('username', 'Account is disabled')
                 ]
             )
         if not user.verify_password(input['password']):
-            return Login(
+            return cls(
                 success=False,
                 errors=[
                     UserError('password', 'Invalid password')
@@ -94,7 +94,7 @@ class Login(relay.ClientIDMutation):
             )
         # Login was successful!
         login_user(user)
-        return Login(
+        return cls(
             success=True,
             token=jwt_token_for_user(user).decode('utf8'),
             user=user,
@@ -116,7 +116,7 @@ class RefreshToken(relay.ClientIDMutation):
     def mutate_and_get_payload(cls, input, context, info):
         token = jwt_token_from_request(context)
         if not token:
-            return RefreshToken(
+            return cls(
                 success=False,
                 error='Missing token',
             )
@@ -124,11 +124,11 @@ class RefreshToken(relay.ClientIDMutation):
             new_token, user = refresh_jwt_token(token)
         except ValueError as err:
             message = err.args[0]
-            return RefreshToken(
+            return cls(
                 success=False,
                 error=message,
             )
-        return RefreshToken(
+        return cls(
             success=True,
             token=new_token.decode('utf8'),
             user=user,

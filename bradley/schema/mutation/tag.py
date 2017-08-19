@@ -23,7 +23,7 @@ class CreateTag(relay.ClientIDMutation):
     @classmethod
     def mutate_and_get_payload(cls, input, context, info):
         if current_user.is_anonymous:
-            return CreateTag(
+            return cls(
                 success=False,
                 errors=[UserError(field="", message="Authentication required")]
             )
@@ -32,7 +32,7 @@ class CreateTag(relay.ClientIDMutation):
         result = serializer.load(input)
 
         if result.errors:
-            return CreateTag(
+            return cls(
                 success=False,
                 errors=UserError.from_marshmallow(result.errors)
             )
@@ -44,17 +44,16 @@ class CreateTag(relay.ClientIDMutation):
         try:
             db.session.commit()
         except IntegrityError:
-            return CreateTag(
+            message = 'Tag with name "{name}" already exists'.format(
+                name=tag.name
+            )
+            error = UserError(field="name", message=message)
+            return cls(
                 success=False,
-                errors=[UserError(
-                    field="name",
-                    message='Tag with name "{name}" already exists'.format(
-                        name=tag.name
-                    )
-                )]
+                errors=[error],
             )
 
-        return CreateTag(
+        return cls(
             success=True,
             tag=tag,
         )
@@ -76,7 +75,7 @@ class MutateTag(relay.ClientIDMutation):
     @classmethod
     def mutate_and_get_payload(cls, input, context, info):
         if current_user.is_anonymous:
-            return MutateTag(
+            return cls(
                 success=False,
                 errors=[UserError(field="", message="Authentication required")]
             )
@@ -84,7 +83,7 @@ class MutateTag(relay.ClientIDMutation):
         tag_id = input['tag_id']
         tag = Tag.query.get(tag_id)
         if not tag or tag.user != current_user:
-            return MutateTag(
+            return cls(
                 success=False,
                 errors=[UserError(
                     field="tag_id",
@@ -92,11 +91,11 @@ class MutateTag(relay.ClientIDMutation):
                 )]
             )
 
-        serializer = TagSerializer(exclude=['user'])
+        serializer = TagSerializer(exclude=['user'], partial=True)
         result = serializer.load(input, instance=tag)
 
         if result.errors:
-            return CreateTag(
+            return cls(
                 success=False,
                 errors=UserError.from_marshmallow(result.errors)
             )
@@ -104,7 +103,7 @@ class MutateTag(relay.ClientIDMutation):
         db.session.add(result.data)
         db.session.commit()
 
-        return MutateTag(
+        return cls(
             success=True,
             tag=tag,
         )
@@ -124,7 +123,7 @@ class DestroyTag(relay.ClientIDMutation):
     @classmethod
     def mutate_and_get_payload(cls, input, context, info):
         if current_user.is_anonymous:
-            return DestroyTag(
+            return cls(
                 success=False,
                 errors=[UserError(field="", message="Authentication required")]
             )
@@ -132,7 +131,7 @@ class DestroyTag(relay.ClientIDMutation):
         tag_id = input['tag_id']
         tag = Tag.query.get(tag_id)
         if not tag or contact.user != current_user:
-            return DestroyTag(
+            return cls(
                 success=False,
                 errors=[UserError(
                     field="tag_id",
@@ -143,7 +142,7 @@ class DestroyTag(relay.ClientIDMutation):
         db.session.delete(tag)
         db.session.commit()
 
-        return DestroyTag(
+        return cls(
             success=True,
             tag=tag,
         )

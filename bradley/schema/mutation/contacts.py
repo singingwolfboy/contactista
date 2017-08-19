@@ -29,7 +29,7 @@ class CreateContact(relay.ClientIDMutation):
     @classmethod
     def mutate_and_get_payload(cls, input, context, info):
         if current_user.is_anonymous:
-            return CreateContact(
+            return cls(
                 success=False,
                 errors=[UserError(field="", message="Authentication required")]
             )
@@ -38,7 +38,7 @@ class CreateContact(relay.ClientIDMutation):
         result = serializer.load(input)
 
         if result.errors:
-            return CreateContact(
+            return cls(
                 success=False,
                 errors=UserError.from_marshmallow(result.errors)
             )
@@ -48,7 +48,7 @@ class CreateContact(relay.ClientIDMutation):
         db.session.add(contact)
         db.session.commit()
 
-        return CreateContact(
+        return cls(
             success=True,
             contact=contact,
         )
@@ -77,7 +77,7 @@ class MutateContact(relay.ClientIDMutation):
     @classmethod
     def mutate_and_get_payload(cls, input, context, info):
         if current_user.is_anonymous:
-            return MutateContact(
+            return cls(
                 success=False,
                 errors=[UserError(field="", message="Authentication required")]
             )
@@ -85,7 +85,7 @@ class MutateContact(relay.ClientIDMutation):
         contact_id = input['contact_id']
         contact = Contact.query.get(contact_id)
         if not contact or contact.user != current_user:
-            return MutateContact(
+            return cls(
                 success=False,
                 errors=[UserError(
                     field="contact_id",
@@ -93,11 +93,11 @@ class MutateContact(relay.ClientIDMutation):
                 )]
             )
 
-        serializer = ContactSerializer(exclude=['user'])
+        serializer = ContactSerializer(exclude=['user'], partial=True)
         result = serializer.load(input, instance=contact)
 
         if result.errors:
-            return CreateContact(
+            return cls(
                 success=False,
                 errors=UserError.from_marshmallow(result.errors)
             )
@@ -105,7 +105,7 @@ class MutateContact(relay.ClientIDMutation):
         db.session.add(result.data)
         db.session.commit()
 
-        return MutateContact(
+        return cls(
             success=True,
             contact=contact,
         )
@@ -125,7 +125,7 @@ class DestroyContact(relay.ClientIDMutation):
     @classmethod
     def mutate_and_get_payload(cls, input, context, info):
         if current_user.is_anonymous:
-            return DestroyContact(
+            return cls(
                 success=False,
                 errors=[UserError(field="", message="Authentication required")]
             )
@@ -133,7 +133,7 @@ class DestroyContact(relay.ClientIDMutation):
         contact_id = input['contact_id']
         contact = Contact.query.get(contact_id)
         if not contact or contact.user != current_user:
-            return DestroyContact(
+            return cls(
                 success=False,
                 errors=[UserError(
                     field="contact_id",
@@ -144,7 +144,7 @@ class DestroyContact(relay.ClientIDMutation):
         db.session.delete(contact)
         db.session.commit()
 
-        return DestroyContact(
+        return cls(
             success=True,
             contact=contact,
         )
