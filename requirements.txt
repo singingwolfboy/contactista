@@ -10,6 +10,7 @@ SQLAlchemy-Continuum
 Flask-Alembic
 psycopg2
 Marshmallow-SQLAlchemy
+colour
 
 git+https://github.com/singingwolfboy/flask-sqlalchemy.git@cli#egg=Flask-SQLAlchemy
 git+https://github.com/singingwolfboy/flask-security.git@username-identity#egg=Flask-Security

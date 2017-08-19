@@ -11,10 +11,13 @@ cascade = "save-update, merge, delete, delete-orphan"
 
 
 class Contact(db.Model):
+    """
+    A person in your contact book.
+    """
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     user = db.relationship(User, backref=db.backref("contacts"))
-    notes = db.Column(
+    note = db.Column(
         db.Text,
         doc="Personal notes that the user made about this contact"
     )
@@ -22,7 +25,7 @@ class Contact(db.Model):
     # but Graphene has a bug with converting `ChoiceType`,
     # so this is a String instead.
     # https://github.com/graphql-python/graphene-sqlalchemy/issues/9
-    notes_format = db.Column(
+    note_format = db.Column(
         db.String(20), default="text",
         doc="Markup format for notes field. One of: text, markdown"
     )
@@ -65,6 +68,11 @@ class Contact(db.Model):
     emails = association_proxy(
         "contact_emails", "email",
         creator=lambda c, e: ContactEmail(category=c, email=e),
+    )
+    tags = db.relationship(
+        "ContactTag",
+        order_by="ContactTag.position",
+        cascade=cascade,
     )
 
     @property

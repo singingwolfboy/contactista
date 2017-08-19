@@ -23,6 +23,9 @@ class Role(db.Model, RoleMixin):
 
 
 class User(db.Model, UserMixin):
+    """
+    A person that uses this application.
+    """
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(
         db.String(255), unique=True, nullable=False, index=True

@@ -2,6 +2,11 @@ from bradley.models import db
 
 
 class Pronouns(db.Model):
+    """
+    The set of pronouns used by a person. This encompasses both commonly
+    used pronouns like "he/him" and "she/her", but also less commonly used
+    pronouns like "they/them" and "e/em".
+    """
     id = db.Column(db.Integer, primary_key=True)
     subject = db.Column(db.String(50), nullable=False)
     object = db.Column(db.String(50), nullable=False)

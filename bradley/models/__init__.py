@@ -20,6 +20,7 @@ from bradley.models.auth import User, Role
 from bradley.models.contacts import (
     Contact, ContactName, ContactPronouns, ContactEmail
 )
+from bradley.models.tag import Tag, ContactTag
 from bradley.models.shared import Pronouns
 
 
@@ -37,4 +38,6 @@ def shell_context():
         "ContactPronouns": ContactPronouns,
         "ContactEmail": ContactEmail,
         "Pronouns": Pronouns,
+        "Tag": Tag,
+        "ContactTag": ContactTag,
     }

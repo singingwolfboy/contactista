@@ -1,4 +1,3 @@
-import json
 import graphene
 from graphene import relay
 from flask_security import current_user
@@ -89,7 +88,7 @@ class MutateContact(relay.ClientIDMutation):
             return MutateContact(
                 success=False,
                 errors=[UserError(
-                    field="clientMutationId",
+                    field="contact_id",
                     message="Contact not found"
                 )]
             )
@@ -137,7 +136,7 @@ class DestroyContact(relay.ClientIDMutation):
             return DestroyContact(
                 success=False,
                 errors=[UserError(
-                    field="clientMutationId",
+                    field="contact_id",
                     message="Contact not found"
                 )]
             )

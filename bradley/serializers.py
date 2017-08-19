@@ -1,5 +1,5 @@
 import re
-from marshmallow import fields, post_load, validates, ValidationError
+from marshmallow import fields, pre_load, post_load, validates, ValidationError
 from marshmallow_sqlalchemy import ModelSchemaOpts, ModelSchema as BaseModelSchema
 from marshmallow_sqlalchemy import field_for
 from marshmallow_sqlalchemy.fields import get_schema_for_field
@@ -7,6 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from bradley.models import db
 from bradley.models.auth import User, Role
 from bradley.models.contacts import Contact, ContactName, ContactEmail, ContactPronouns
+from bradley.models.tag import Tag, ContactTag
 from bradley.models.shared import Pronouns
 
 
@@ -110,6 +111,27 @@ class ContactPronounsSerializer(ModelSchema):
         model = ContactPronouns
 
 
+class TagSerializer(ModelSchema):
+    class Meta:
+        model = Tag
+
+
+class ContactTagSerializer(ModelSchema):
+    name = field_for(Tag, 'name')
+    color = field_for(Tag, 'color')
+
+    class Meta:
+        model = ContactTag
+        fields = ('name', 'color', 'note')
+
+
+def normalize_tag(data):
+    if isinstance(data, str):
+        return {"name": data}
+    else:
+        return data
+
+
 class ContactSerializer(ModelSchema):
     user = fields.Nested(UserSerializer)
     names = fields.Nested(
@@ -129,12 +151,17 @@ class ContactSerializer(ModelSchema):
         many=True,
         attribute="pronouns_list",
     )
+    tags = fields.Nested(
+        ContactTagSerializer,
+        many=True,
+        attribute="tags",
+    )
 
     class Meta:
         model = Contact
         fields = (
-            'user', 'notes', 'notes_format',
-            'names', 'emails', 'pronouns_list',
+            'user', 'note', 'note_format',
+            'names', 'emails', 'pronouns_list', 'tags',
         )
 
     @post_load(pass_original=True)
@@ -172,6 +199,12 @@ class ContactSerializer(ModelSchema):
                 )
 
         return contact
+
+    @pre_load
+    def normalize_tags(self, data):
+        if data.get('tags'):
+            data['tags'] = [normalize_tag(t) for t in data['tags']]
+        return data
 
 
 def get_pronouns_by_subject(subject_pronoun):
@@ -236,4 +269,5 @@ def shell_context():
         "RoleSerializer": RoleSerializer,
         "ContactSerializer": ContactSerializer,
         "PronounsSerializer": PronounsSerializer,
+        "TagSerializer": TagSerializer,
     }

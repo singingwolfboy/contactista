@@ -49,8 +49,8 @@ def upgrade():
     op.create_table('contact',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('notes', sa.Text(), nullable=True),
-    sa.Column('notes_format', sa.String(length=20), nullable=True),
+    sa.Column('note', sa.Text(), nullable=True),
+    sa.Column('note_format', sa.String(length=20), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

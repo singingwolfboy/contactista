@@ -28,6 +28,7 @@ class User(SQLAlchemyObjectType):
         model = models.User
         interfaces = (relay.Node,)
         exclude_fields = ('password',)
+        description = trim_docstring(models.User.__doc__)
 
     def resolve_user_id(self, args, context, info):
         return self.id
@@ -47,6 +48,23 @@ class Pronouns(SQLAlchemyObjectType):
     class Meta:
         model = models.Pronouns
         interfaces = (relay.Node,)
+        description = trim_docstring(models.Pronouns.__doc__)
+
+
+class Tag(SQLAlchemyObjectType):
+    tag_id = graphene.Int()
+    color = graphene.String()
+
+    class Meta:
+        model = models.Tag
+        interfaces = (relay.Node,)
+        description = trim_docstring(models.Tag.__doc__)
+
+    def resolve_tag_id(self, args, context, info):
+        return self.id
+
+    def resolve_color(self, args, context, info):
+        return self.color.hex
 
 
 class ContactName(ObjectType):
@@ -59,15 +77,30 @@ class ContactEmail(ObjectType):
     category = graphene.String()
 
 
+class ContactTag(ObjectType):
+    name = graphene.String()
+    color = graphene.String()
+    note = graphene.String()
+
+
 class Contact(SQLAlchemyObjectType):
     contact_id = graphene.Int()
+    note = graphene.String()
+    note_format = graphene.String()
 
     class Meta:
         model = models.Contact
         interfaces = (relay.Node,)
+        description = trim_docstring(models.Contact.__doc__)
 
     def resolve_contact_id(self, args, context, info):
         return self.id
+
+    def resolve_note(self, args, context, info):
+        return self.note
+
+    def resolve_note_format(self, args, context, info):
+        return self.note_format
 
     # add relationships and proxies
     pronouns_list = graphene.Field(
@@ -94,6 +127,10 @@ class Contact(SQLAlchemyObjectType):
         graphene.List(ContactEmail),
         description=trim_docstring(models.Contact.contact_names_list.__doc__)
     )
+    tags = graphene.Field(
+        graphene.List(ContactTag),
+        description=trim_docstring(models.Contact.tags.__doc__)
+    )
 
     def resolve_pronouns_list(self, args, context, info):
         return self.pronouns_list
@@ -118,3 +155,6 @@ class Contact(SQLAlchemyObjectType):
 
     def resolve_emails(self, args, context, info):
         return self.contact_emails_list
+
+    def resolve_tags(self, args, context, info):
+        return self.tags
