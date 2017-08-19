@@ -98,6 +98,8 @@ def tag_with_user(tag, user):
     the given name and the given user. If there is no Tag object in the
     database that matches, just set it on the existing object and return it.
     """
+    if tag.user == user:
+        return tag
     try:
         return Tag.query.filter_by(name=tag.name, user=user).one()
     except NoResultFound:
@@ -107,8 +109,7 @@ def tag_with_user(tag, user):
 
 def user_set_listener(contact, user, old_user, initiator):
     for contact_tag in contact.tags:
-        if not contact_tag.tag.user:
-            contact_tag.tag = tag_with_user(contact_tag.tag, user)
+        contact_tag.tag = tag_with_user(contact_tag.tag, user)
 
 sa.event.listen(Contact.user, 'set', user_set_listener)
 
