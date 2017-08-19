@@ -19,8 +19,8 @@ class CreateContact(relay.ClientIDMutation):
         names = graphene.List(ContactNameInput)
         email = graphene.String()
         emails = graphene.List(ContactEmailInput)
-        notes = graphene.String()
-        notes_format = graphene.String()
+        note = graphene.String()
+        note_format = graphene.String()
 
     success = graphene.Boolean()
     errors = graphene.List(UserError)
@@ -67,8 +67,8 @@ class MutateContact(relay.ClientIDMutation):
         names = graphene.List(ContactNameInput)
         email = graphene.String()
         emails = graphene.List(ContactEmailInput)
-        notes = graphene.String()
-        notes_format = graphene.String()
+        note = graphene.String()
+        note_format = graphene.String()
 
     success = graphene.Boolean()
     errors = graphene.List(UserError)
