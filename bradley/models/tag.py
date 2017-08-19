@@ -60,26 +60,25 @@ class ContactTag(db.Model):
 
     @property
     def name(self):
-        return self.tag.name
+        if self.tag:
+            return self.tag.name
 
     @name.setter
     def name(self, value):
-        if self.contact and self.contact.user:
-            user = self.contact.user
-            try:
-                self.tag = (
-                    Tag.query
-                    .filter_by(name=value, user=user)
-                    .one()
-                )
-            except NoResultFound:
-                self.tag = Tag(name=value, user=user)
+        if self.tag:
+            tag = self.tag
+            tag.name = value
         else:
-            self.tag = Tag(name=value)
+            tag = Tag(name=value)
+        if self.contact and self.contact.user:
+            self.tag = tag_with_user(tag, self.contact.user)
+        else:
+            self.tag = tag
 
     @property
     def color(self):
-        return self.tag.color
+        if self.tag:
+            return self.tag.color
 
     def __str__(self):
         return self.name
