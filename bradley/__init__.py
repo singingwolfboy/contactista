@@ -8,6 +8,9 @@ from bradley.admin import admin, admin_context
 from bradley.jwt import user_from_jwt_request
 
 
+__version__ = "0.0.1"
+
+
 DEFAULT_CONFIG = {
     "SECRET_KEY": "insecure-change-me",
     "SECURITY_PASSWORD_SALT": "insecure-change-me",
