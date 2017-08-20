@@ -1,6 +1,8 @@
 Bradley
 =======
 
+|build-status| |coverage-status| |docs|
+
 Bradley is a Personal Relationship Management (PRM) system, similar to Monica_,
 but written in Python.
 
@@ -26,3 +28,13 @@ Make sure you have a local PostgreSQL_ server running. Then run:
 You can run ``flask --help`` to see what other commands are available.
 
 .. _PostgreSQL: https://www.postgresql.org/
+
+.. |build-status| image:: https://travis-ci.org/singingwolfboy/bradley.svg?branch=master&style=flat
+   :target: https://travis-ci.org/singingwolfboy/bradley
+   :alt: Build status
+.. |coverage-status| image:: http://codecov.io/github/singingwolfboy/bradley/coverage.svg?branch=master
+   :target: http://codecov.io/github/singingwolfboy/bradley?branch=master
+   :alt: Test coverage
+.. |docs| image:: https://readthedocs.org/projects/bradley/badge/?version=latest&style=flat
+   :target: http://bradley.readthedocs.org/
+   :alt: Documentation
