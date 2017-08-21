@@ -1,0 +1,3 @@
+[run]
+source = bradley
+omit = bradley/migrations/*
