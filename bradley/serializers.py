@@ -146,10 +146,9 @@ class ContactSerializer(ModelSchema):
         many=True,
         attribute="contact_emails_list",
     )
-    pronouns_list = fields.Nested(
-        PronounsSerializer,
-        many=True,
-        attribute="pronouns_list",
+    pronouns_list = fields.Method(
+        serialize='pronouns_list_serialize',
+        deserialize='pronouns_list_deserialize',
     )
     tags = fields.Nested(
         ContactTagSerializer,
@@ -199,6 +198,12 @@ class ContactSerializer(ModelSchema):
                 )
 
         return contact
+
+    def pronouns_list_serialize(self, obj):
+        return PronounsSerializer(many=True).dump(obj)
+
+    def pronouns_list_deserialize(self, data):
+        return [get_pronouns_by_filters(f) for f in data]
 
     @pre_load
     def normalize_tags(self, data):

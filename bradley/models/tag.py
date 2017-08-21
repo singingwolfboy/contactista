@@ -89,23 +89,32 @@ class ContactTag(db.Model):
         )
 
 
-# We use SQLAlchemy's event interface to ensure that
-# the tag's user always matches the contact's user.
-
 def tag_with_user(tag, user):
     """
     Given a tag and a user, return the Tag object in the database that matches
     the given name and the given user. If there is no Tag object in the
     database that matches, just set it on the existing object and return it.
     """
-    if tag.user == user:
+    if user is None or tag.user == user:
+        # Nothing to do. Just return.
         return tag
+    if user.id is None:
+        # User hasn't been saved yet -- querying will raise a warning,
+        # so just don't query.
+        tag.user = user
+        return tag
+    # We have a user that doesn't match the given tag. See if we already
+    # have a tag for the given name and user.
     try:
         return Tag.query.filter_by(name=tag.name, user=user).one()
     except NoResultFound:
+        # Nope, we don't. This will be a newly-saved tag.
         tag.user = user
         return tag
 
+
+# We use SQLAlchemy's event interface to ensure that
+# the tag's user always matches the contact's user.
 
 def user_set_listener(contact, user, old_user, initiator):
     for contact_tag in contact.tags:

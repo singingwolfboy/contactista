@@ -1,6 +1,8 @@
+import json
+import os
 import pytest
 from bradley import create_app
-from bradley.models import db as _db
+from bradley.models import db as _db, Role, Pronouns
 from testing.postgresql import Postgresql
 
 # http://spotofdata.com/flask-testing/
@@ -29,6 +31,7 @@ def app():
 def db(app):
     _db.init_app(app)
     _db.create_all()
+    seed_database(_db.session)
     yield _db
     _db.drop_all()
 
@@ -48,3 +51,27 @@ def session(db):
     transaction.rollback()
     connection.close()
     session_.remove()
+
+
+def seed_database(session):
+    session.add(Role(name="superuser", description="Unlimited access"))
+
+    pronouns_fixture_path = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)),
+        "bradley",
+        "fixtures",
+        "pronouns.json",
+    )
+    with open(pronouns_fixture_path) as f:
+        pronouns_list = json.load(f)
+
+    pronouns_objs = [Pronouns(
+        subject=line[0],
+        object=line[1],
+        possessive_determiner=line[2],
+        possessive=line[3],
+        reflexive=line[4],
+    ) for line in pronouns_list]
+    session.add_all(pronouns_objs)
+    session.commit()
+
