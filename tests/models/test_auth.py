@@ -3,7 +3,6 @@ import sqlalchemy as sa
 from bradley.models import db, User
 
 
-# @pytest.mark.usefixtures("session")
 def test_username_unique(session):
     user1 = User(username="hhh")
     session.add(user1)
