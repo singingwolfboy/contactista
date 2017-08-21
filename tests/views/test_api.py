@@ -62,9 +62,11 @@ def test_unauthorized_contacts(client):
 
 @pytest.mark.usefixtures("session")
 def test_authorized_contacts(client):
-    user = User(username="test")
-    contact = Contact(user=user, name="Sally")
-    db.session.add_all([user, contact])
+    user1 = User(username="test")
+    contact1 = Contact(user=user1, name="Sally")
+    user2 = User(username="test2")
+    contact2 = Contact(user=user2, name="Paul")
+    db.session.add_all([user1, contact1, user2, contact2])
     db.session.commit()
     query = """
     {
@@ -78,7 +80,7 @@ def test_authorized_contacts(client):
       }
     }
     """
-    token = jwt_token_for_user(user)
+    token = jwt_token_for_user(user1)
     headers = {"Authorization": "Bearer {token}".format(token=token.decode('utf-8'))}
     resp = client.get("/graphql", data={"query": query}, headers=headers)
     assert resp.json == {
