@@ -69,9 +69,12 @@ def user_from_jwt_request(request):
     token = jwt_token_from_request(request)
     if not token:
         return None
-    payload = jwt.decode(
-        token,
-        key=current_app.config['SECRET_KEY'],
-        algorithms=[JWT_ALGORITHM],
-    )
+    try:
+        payload = jwt.decode(
+            token,
+            key=current_app.config['SECRET_KEY'],
+            algorithms=[JWT_ALGORITHM],
+        )
+    except jwt.exceptions.DecodeError:
+        return None
     return User.query.get(payload['identity'])

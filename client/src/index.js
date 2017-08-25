@@ -10,21 +10,25 @@ import {
   Network,
   RecordSource,
   Store,
+  ConnectionHandler,
+  ViewerHandler,
 } from 'relay-runtime';
 
 import App from './App';
 
 const mountNode = document.getElementById('root');
 
-function fetchQuery(
-  operation,
-  variables,
-) {
+const fetchQuery = (operation, variables) => {
+  const headers = {
+    'Content-Type': 'application/json',
+  }
+  const token = sessionStorage.getItem('token')
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
   return fetch('/graphql', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers,
     body: JSON.stringify({
       query: operation.text,
       variables,
@@ -34,16 +38,28 @@ function fetchQuery(
   });
 }
 
+// this might not be useful...
+const handlerProvider = (handle) => {
+  switch (handle) {
+    case 'connection': return ConnectionHandler;
+    case 'viewer': return ViewerHandler;
+  }
+  throw new Error(
+    `handlerProvider: No handler provided for ${handle}`
+  );
+}
+
 const modernEnvironment = new Environment({
   network: Network.create(fetchQuery),
   store: new Store(new RecordSource()),
+  handlerProvider,
 });
 
 ReactDOM.render(
   <QueryRenderer
     environment={modernEnvironment}
     query={graphql`
-      query appQuery {
+      query srcQuery {
         viewer {
           ...App_viewer
         }

@@ -6,7 +6,7 @@ import {
 
 class Contact extends React.Component {
   render() {
-    const { contact } = this.props.contact;
+    const { contact } = this.props;
     return (
       <li>{contact.name}</li>
     );

@@ -21,7 +21,7 @@ class Register(relay.ClientIDMutation):
     success = graphene.Boolean()
     errors = graphene.List(UserError)
     token = graphene.String()
-    user = graphene.Field(UserType)
+    viewer = graphene.Field(UserType)
 
     @classmethod
     def mutate_and_get_payload(cls, input, context, info):
@@ -47,7 +47,7 @@ class Register(relay.ClientIDMutation):
         return cls(
             success=True,
             token=jwt_token_for_user(user).decode('utf8'),
-            user=user,
+            viewer=user,
         )
 
 
@@ -62,7 +62,7 @@ class Login(relay.ClientIDMutation):
     success = graphene.Boolean()
     errors = graphene.List(UserError)
     token = graphene.String()
-    user = graphene.Field(UserType)
+    viewer = graphene.Field(UserType)
 
     @classmethod
     def mutate_and_get_payload(cls, input, context, info):
@@ -97,7 +97,7 @@ class Login(relay.ClientIDMutation):
         return cls(
             success=True,
             token=jwt_token_for_user(user).decode('utf8'),
-            user=user,
+            viewer=user,
         )
 
 
@@ -110,7 +110,7 @@ class RefreshToken(relay.ClientIDMutation):
     success = graphene.Boolean()
     error = graphene.String()
     token = graphene.String()
-    user = graphene.Field(UserType)
+    viewer = graphene.Field(UserType)
 
     @classmethod
     def mutate_and_get_payload(cls, input, context, info):
@@ -131,5 +131,5 @@ class RefreshToken(relay.ClientIDMutation):
         return cls(
             success=True,
             token=new_token.decode('utf8'),
-            user=user,
+            viewer=user,
         )

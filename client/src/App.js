@@ -1,4 +1,5 @@
 import ContactList from './ContactList';
+import Login from './Login';
 
 import React from 'react';
 import {
@@ -9,11 +10,16 @@ import {
 class App extends React.Component {
   render() {
     const { viewer } = this.props;
+    let body;
+    if (viewer) {
+      body = <ContactList viewer={viewer} />
+    } else {
+      body = <Login />
+    }
     return (
       <div>
         <h1>Bradley Contacts</h1>
-        <p>Username: {viewer.username}</p>
-        <ContactList viewer={viewer} />
+        {body}
       </div>
     );
   }

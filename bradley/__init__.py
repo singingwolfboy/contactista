@@ -6,6 +6,7 @@ from bradley.serializers import shell_context as shell_context_serializers
 from bradley.views.api import blueprint as api_bp
 from bradley.admin import admin, admin_context
 from bradley.jwt import user_from_jwt_request
+from bradley.cli import graphql
 
 
 __version__ = "0.0.1"
@@ -33,4 +34,5 @@ def create_app():
     app.shell_context_processor(shell_context_models)
     app.shell_context_processor(shell_context_serializers)
     app.register_blueprint(api_bp)
+    app.cli.add_command(graphql, 'graphql')
     return app
