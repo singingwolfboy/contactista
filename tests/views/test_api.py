@@ -9,42 +9,37 @@ def test_graphiql_enabled(client):
 
 
 @pytest.mark.usefixtures("session")
-def test_empty_contacts(client):
+def test_anonymous_viewer(client):
     query = """
     {
-      contacts {
-        edges {
-          node {
-            id
-            name
-          }
-        }
+      viewer {
+        username
       }
     }
     """
     resp = client.get("/graphql", data={"query": query})
     assert resp.json == {
       "data": {
-        "contacts": {
-          "edges": []
-        }
+        "viewer": None,
       }
     }
 
 
 @pytest.mark.usefixtures("session")
-def test_unauthorized_contacts(client):
+def test_empty_contacts(client):
     user = User(username="test")
     contact = Contact(user=user, name="Sally")
     db.session.add_all([user, contact])
     db.session.commit()
     query = """
     {
-      contacts {
-        edges {
-          node {
-            id
-            name
+      viewer {
+        contacts {
+          edges {
+            node {
+              id
+              name
+            }
           }
         }
       }
@@ -53,15 +48,13 @@ def test_unauthorized_contacts(client):
     resp = client.get("/graphql", data={"query": query})
     assert resp.json == {
       "data": {
-        "contacts": {
-          "edges": []
-        }
+        "viewer": None,
       }
     }
 
 
 @pytest.mark.usefixtures("session")
-def test_authorized_contacts(client):
+def test_basic_contacts(client):
     user1 = User(username="test")
     contact1 = Contact(user=user1, name="Sally")
     user2 = User(username="test2")
@@ -70,11 +63,14 @@ def test_authorized_contacts(client):
     db.session.commit()
     query = """
     {
-      contacts {
-        edges {
-          node {
-            id
-            name
+      viewer {
+        username
+        contacts {
+          edges {
+            node {
+              id
+              name
+            }
           }
         }
       }
@@ -85,13 +81,16 @@ def test_authorized_contacts(client):
     resp = client.get("/graphql", data={"query": query}, headers=headers)
     assert resp.json == {
       "data": {
-        "contacts": {
-          "edges": [{
-            "node": {
-              "id": "Q29udGFjdDo0",
-              "name": "Sally",
-            }
-          }]
+        "viewer": {
+          "username": "test",
+          "contacts": {
+            "edges": [{
+              "node": {
+                "id": "Q29udGFjdDo0",
+                "name": "Sally",
+              }
+            }]
+          }
         }
       }
     }

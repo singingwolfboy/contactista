@@ -1,7 +1,7 @@
 import graphene
 from graphene import relay, ObjectType, InputObjectType
 from graphene.utils.trim_docstring import trim_docstring
-from graphene_sqlalchemy import SQLAlchemyObjectType
+from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from bradley import models
 
 
@@ -19,29 +19,6 @@ class UserError(ObjectType):
             for field, messages in errors.items()
             for message in messages
         ]
-
-
-class User(SQLAlchemyObjectType):
-    user_id = graphene.Int()
-
-    class Meta:
-        model = models.User
-        interfaces = (relay.Node,)
-        exclude_fields = ('password',)
-        description = trim_docstring(models.User.__doc__)
-
-    def resolve_user_id(self, args, context, info):
-        return self.id
-
-class Role(SQLAlchemyObjectType):
-    role_id = graphene.Int()
-
-    class Meta:
-        model = models.Role
-        interfaces = (relay.Node,)
-
-    def resolve_role_id(self, args, context, info):
-        return self.id
 
 
 class Pronouns(SQLAlchemyObjectType):
@@ -158,3 +135,29 @@ class Contact(SQLAlchemyObjectType):
 
     def resolve_tags(self, args, context, info):
         return self.tags
+
+
+class Role(SQLAlchemyObjectType):
+    role_id = graphene.Int()
+
+    class Meta:
+        model = models.Role
+        interfaces = (relay.Node,)
+
+    def resolve_role_id(self, args, context, info):
+        return self.id
+
+
+class User(SQLAlchemyObjectType):
+    user_id = graphene.Int()
+    contacts = SQLAlchemyConnectionField(Contact)
+    tags = SQLAlchemyConnectionField(Tag)
+
+    class Meta:
+        model = models.User
+        interfaces = (relay.Node,)
+        exclude_fields = ('password',)
+        description = trim_docstring(models.User.__doc__)
+
+    def resolve_user_id(self, args, context, info):
+        return self.id
