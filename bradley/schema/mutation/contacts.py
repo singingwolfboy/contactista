@@ -27,7 +27,7 @@ class CreateContact(relay.ClientIDMutation):
     contact = graphene.Field(ContactType)
 
     @classmethod
-    def mutate_and_get_payload(cls, input, context, info):
+    def mutate_and_get_payload(cls, root, info, **input):
         if current_user.is_anonymous:
             return cls(
                 success=False,
@@ -75,7 +75,7 @@ class MutateContact(relay.ClientIDMutation):
     contact = graphene.Field(ContactType)
 
     @classmethod
-    def mutate_and_get_payload(cls, input, context, info):
+    def mutate_and_get_payload(cls, root, info, **input):
         if current_user.is_anonymous:
             return cls(
                 success=False,
@@ -123,7 +123,7 @@ class DestroyContact(relay.ClientIDMutation):
     contact = graphene.Field(ContactType)
 
     @classmethod
-    def mutate_and_get_payload(cls, input, context, info):
+    def mutate_and_get_payload(cls, root, info, **input):
         if current_user.is_anonymous:
             return cls(
                 success=False,

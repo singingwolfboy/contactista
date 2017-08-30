@@ -24,7 +24,7 @@ class Register(relay.ClientIDMutation):
     viewer = graphene.Field(UserType)
 
     @classmethod
-    def mutate_and_get_payload(cls, input, context, info):
+    def mutate_and_get_payload(cls, root, info, **input):
         result = UserSerializer().load(input)
         if result.errors:
             return cls(
@@ -65,10 +65,10 @@ class Login(relay.ClientIDMutation):
     viewer = graphene.Field(UserType)
 
     @classmethod
-    def mutate_and_get_payload(cls, input, context, info):
+    def mutate_and_get_payload(cls, root, info, *, username, password):
         user = (
             User.query
-            .filter(User.username == input['username'])
+            .filter(User.username == username)
             .scalar()
         )
         if not user:
@@ -76,26 +76,33 @@ class Login(relay.ClientIDMutation):
                 success=False,
                 errors=[
                     UserError('username', 'Specified user does not exist')
-                ]
+                ],
+                token=None,
+                viewer=None,
             )
         if not user.active:
             return cls(
                 success=False,
                 errors=[
                     UserError('username', 'Account is disabled')
-                ]
+                ],
+                token=None,
+                viewer=None,
             )
-        if not user.verify_password(input['password']):
+        if not user.verify_password(password):
             return cls(
                 success=False,
                 errors=[
                     UserError('password', 'Invalid password')
-                ]
+                ],
+                token=None,
+                viewer=None,
             )
         # Login was successful!
         login_user(user)
         return cls(
             success=True,
+            errors=[],
             token=jwt_token_for_user(user).decode('utf8'),
             viewer=user,
         )
@@ -105,15 +112,13 @@ class RefreshToken(relay.ClientIDMutation):
     """
     Mutation to refresh a JWT token
     """
-    class Input:
-        pass
     success = graphene.Boolean()
     error = graphene.String()
     token = graphene.String()
     viewer = graphene.Field(UserType)
 
     @classmethod
-    def mutate_and_get_payload(cls, input, context, info):
+    def mutate_and_get_payload(cls, root, info):
         token = jwt_token_from_request(context)
         if not token:
             return cls(

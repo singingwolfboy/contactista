@@ -10,7 +10,7 @@ class Query(graphene.ObjectType):
     viewer = graphene.Field(User)
     pronouns = SQLAlchemyConnectionField(Pronouns)
 
-    def resolve_viewer(self, args, context, info):
+    def resolve_viewer(self, info):
         if current_user.is_authenticated:
             return current_user._get_current_object()
         return None

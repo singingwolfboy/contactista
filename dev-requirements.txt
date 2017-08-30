@@ -1,4 +1,5 @@
 pytest
 pytest-flask
 pytest-cov
+pytest-mock
 testing.postgresql

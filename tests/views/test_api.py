@@ -1,5 +1,6 @@
 import pytest
-from bradley.models import db, User, Contact
+from colour import Color
+from bradley.models import db, User, Contact, Tag
 from bradley.jwt import jwt_token_for_user
 
 
@@ -94,3 +95,95 @@ def test_basic_contacts(client):
         }
       }
     }
+
+
+@pytest.mark.usefixtures("session")
+def test_login(client, mocker):
+    get_mock_token = mocker.patch(
+      "bradley.schema.mutation.auth.jwt_token_for_user",
+      return_value=b"faketoken",
+    )
+    user = User(username="test")
+    user.set_password("abc")
+    user.active = True
+    db.session.add(user)
+    db.session.commit()
+    query = """
+    mutation {
+      login(input: {
+        username: "test",
+        password: "abc"
+      }) {
+        success
+        errors {
+          field
+          message
+        }
+        token
+        viewer {
+          username
+        }
+      }
+    }
+    """
+    resp = client.post("/graphql", data={"query": query})
+    assert resp.json == {
+      "data": {
+        "login": {
+          "success": True,
+          "errors": [],
+          "token": "faketoken",
+          "viewer": {
+            "username": "test"
+          }
+        }
+      }
+    }
+    get_mock_token.assert_called_with(user)
+
+
+@pytest.mark.usefixtures("session")
+def test_create_tag(client):
+    user = User(username="test")
+    db.session.add(user)
+    db.session.commit()
+    assert Tag.query.filter_by(user=user).count() == 0
+    query = """
+    mutation {
+      createTag(input: {
+        name: "best conference",
+        color: "#ff0000"
+      }) {
+        success
+        errors {
+          field
+          message
+        }
+        tag {
+          name
+          color
+        }
+      }
+    }
+    """
+    token = jwt_token_for_user(user)
+    headers = {"Authorization": "Bearer {token}".format(token=token.decode('utf-8'))}
+    resp = client.post("/graphql", data={"query": query}, headers=headers)
+    assert resp.json == {
+      "data": {
+        "createTag": {
+          "success": True,
+          "errors": [],
+          "tag": {
+            "name": "best conference",
+            "color": "#ff0000"
+          }
+        }
+      }
+    }
+    assert Tag.query.filter_by(user=user).count() == 1
+    tag = Tag.query.filter_by(user=user).first()
+    assert tag.name == "best conference"
+    assert isinstance(tag.color, Color)
+    assert tag.color.hex == "#f00"
+    assert tag.color.hex_l == "#ff0000"
