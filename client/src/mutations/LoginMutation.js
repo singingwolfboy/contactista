@@ -4,26 +4,6 @@ import {
   graphql,
 } from 'react-relay';
 
-const fetchQuery = (operation, variables) => {
-  const headers = {
-    'Content-Type': 'application/json',
-  }
-  const token = sessionStorage.getItem('token')
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
-  }
-  return fetch('/graphql', {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({
-      query: operation.text,
-      variables,
-    }),
-  }).then(response => {
-    return response.json();
-  });
-}
-
 const mutation = graphql`
   mutation LoginMutation(
     $input: LoginInput!
