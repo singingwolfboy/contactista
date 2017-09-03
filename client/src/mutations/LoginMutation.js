@@ -23,7 +23,8 @@ let tempID = 0;
 function commit(
   environment,
   username,
-  password
+  password,
+  refreshEnvironment
 ) {
   return commitMutation(
     environment,
@@ -38,7 +39,7 @@ function commit(
       },
       onCompleted: (response) => {
         sessionStorage.setItem('token', response.login.token)
-        // need a way to reload the environment...
+        refreshEnvironment()
       }
     }
   );

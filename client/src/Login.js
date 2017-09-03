@@ -1,18 +1,23 @@
 import LoginMutation from './mutations/LoginMutation'
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   createFragmentContainer,
   graphql,
 } from 'react-relay';
 
 class Login extends React.Component {
+  static propTypes = {
+    refreshEnvironment: PropTypes.func.isRequired
+  }
   handleSubmit = (event) => {
     event.preventDefault()
     LoginMutation.commit(
       this.props.relay.environment,
       event.target.username.value,
       event.target.password.value,
+      this.props.refreshEnvironment,
     );
   }
   render() {

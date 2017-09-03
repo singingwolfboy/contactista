@@ -9,12 +9,12 @@ import {
 
 class App extends React.Component {
   render() {
-    const { viewer } = this.props;
+    const { viewer, refreshEnvironment } = this.props;
     let body;
     if (viewer) {
       body = <ContactList viewer={viewer} />
     } else {
-      body = <Login />
+      body = <Login refreshEnvironment={refreshEnvironment} />
     }
     return (
       <div>

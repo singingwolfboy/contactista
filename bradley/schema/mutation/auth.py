@@ -65,7 +65,7 @@ class Login(relay.ClientIDMutation):
     viewer = graphene.Field(UserType)
 
     @classmethod
-    def mutate_and_get_payload(cls, root, info, *, username, password):
+    def mutate_and_get_payload(cls, root, info, *, username, password, **input):
         user = (
             User.query
             .filter(User.username == username)

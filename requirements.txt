@@ -1,8 +1,9 @@
+graphql-core>=2.0.dev
+graphene>=2.0.dev
+graphene-sqlalchemy>=2.0.dev
 Flask
 # Flask-SQLAlchemy
 Flask-GraphQL
-graphene>=2.0.dev
-graphene-sqlalchemy>=2.0.dev
 # Flask-Security
 Flask-Admin
 bcrypt
