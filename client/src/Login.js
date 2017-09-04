@@ -2,10 +2,7 @@ import LoginMutation from './mutations/LoginMutation'
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  createFragmentContainer,
-  graphql,
-} from 'react-relay';
+import { createFragmentContainer } from 'react-relay';
 
 class Login extends React.Component {
   static propTypes = {

@@ -17,10 +17,17 @@ class ContactList extends React.Component {
     );
   }
   render() {
+    // we *should* get `totalCount` from the GraphQL query,
+    // but graphene doesn't implement that yet. The edge length will work,
+    // as long as we don't paginate.
+    const totalCount = this.props.viewer.contacts.edges.length
     return (
-      <ul className="contact-list">
-        {this.renderContacts()}
-      </ul>
+      <div>
+        <p>You have {totalCount} contacts.</p>
+        <ul className="contact-list">
+          {this.renderContacts()}
+        </ul>
+      </div>
     );
   }
 }

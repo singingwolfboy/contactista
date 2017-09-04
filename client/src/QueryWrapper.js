@@ -8,8 +8,6 @@ import {
   Network,
   RecordSource,
   Store,
-  ConnectionHandler,
-  ViewerHandler,
 } from 'relay-runtime';
 import App from './App'
 
