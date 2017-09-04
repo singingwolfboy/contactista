@@ -34,10 +34,10 @@ const fetchQuery = (operation, variables) => {
   });
 }
 
-const makeEnvironment = () => (
+const makeEnvironment = (records = undefined) => (
   new Environment({
     network: Network.create(fetchQuery),
-    store: new Store(new RecordSource()),
+    store: new Store(new RecordSource(records)),
   })
 )
 

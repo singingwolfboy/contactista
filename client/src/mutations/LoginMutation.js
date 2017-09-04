@@ -39,7 +39,15 @@ function commit(
       },
       onCompleted: (response) => {
         sessionStorage.setItem('token', response.login.token)
-        refreshEnvironment()
+        const records = {
+          "client:root": {
+            viewer: {
+              __id: response.login.viewer.id,
+              username: response.login.viewer.username,
+            }
+          }
+        }
+        refreshEnvironment(records)
       }
     }
   );
