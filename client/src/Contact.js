@@ -7,15 +7,22 @@ import colorContrast from 'font-color-contrast';
 
 class Contact extends React.Component {
   renderNames() {
-    const { contact } = this.props;
-    if (!contact.names.length) {
+    const { names } = this.props.contact;
+    if (!names.length) {
       return null
+    }
+    if (names.length === 1) {
+      return (
+        <div className="names">
+          Name: {names[0].name}
+        </div>
+      )
     }
     return (
       <div className="names">
         Names:
         <ol className="contact-names">
-          {contact.names.map(({ category, name }) => (
+          {names.map(({ category, name }) => (
             <li key={category}>
               <span className="category">{category}</span>
               :{" "}
@@ -27,19 +34,29 @@ class Contact extends React.Component {
     )
   }
   renderEmails() {
-    const { contact } = this.props;
-    if (!contact.emails.length) {
+    const { emails } = this.props.contact;
+    if (!emails.length) {
       return null
+    }
+    const displayEmail = (email) => (
+      <a href={`mailto:${email}`}>{email}</a>
+    )
+    if (emails.length == 1) {
+      return (
+        <div className="emails">
+          Email: {displayEmail(emails[0].email)}
+        </div>
+      )
     }
     return (
       <div className="emails">
         Emails:
         <ol className="contact-emails">
-          {contact.emails.map(({ category, email }) => (
+          {emails.map(({ category, email }) => (
             <li key={category}>
               <span className="category">{category}</span>
               :{" "}
-              <span className="email">{email}</span>
+              <span className="email">{displayEmail(email)}</span>
             </li>
           ))}
         </ol>
@@ -47,32 +64,41 @@ class Contact extends React.Component {
     )
   }
   renderPronouns() {
-    const { contact } = this.props;
-    if (!contact.pronounsList.length) {
+    const { pronounsList } = this.props.contact;
+    if (!pronounsList.length) {
       return null
     }
-    const pronounsListItem = ({ subject, object, possessiveDeterminer }) => (
-      <li key={subject}>{subject}/{object}/{possessiveDeterminer}</li>
+    const displayPronouns = ({ subject, object, possessiveDeterminer }) => (
+      `${subject}/${object}/${possessiveDeterminer}`
     )
+    if (pronounsList.length === 1) {
+      return (
+        <div className="pronouns">
+          Pronouns: {displayPronouns(pronounsList[0])}
+        </div>
+      )
+    }
     return (
       <div className="pronouns">
         Pronouns:
         <ol className="contact-pronouns">
-          {contact.pronounsList.map(pronounsListItem)}
+          {pronounsList.map(pronouns => (
+            <li>{displayPronouns(pronouns)}</li>
+          ))}
         </ol>
       </div>
     )
   }
   renderTags() {
-    const { contact } = this.props;
-    if (!contact.tags.length) {
+    const { tags } = this.props.contact;
+    if (!tags.length) {
       return null
     }
     return (
       <div className="tags">
         Tags:
         <ol className="contact-tags">
-          {contact.tags.map(({ name, color, note }) => {
+          {tags.map(({ name, color, note }) => {
             const style = {
               backgroundColor: color,
               color: colorContrast(color)
