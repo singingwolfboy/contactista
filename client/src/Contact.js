@@ -41,7 +41,7 @@ class Contact extends React.Component {
     const displayEmail = (email) => (
       <a href={`mailto:${email}`}>{email}</a>
     )
-    if (emails.length == 1) {
+    if (emails.length === 1) {
       return (
         <div className="emails">
           Email: {displayEmail(emails[0].email)}
@@ -83,7 +83,7 @@ class Contact extends React.Component {
         Pronouns:
         <ol className="contact-pronouns">
           {pronounsList.map(pronouns => (
-            <li>{displayPronouns(pronouns)}</li>
+            <li key={pronouns.id}>{displayPronouns(pronouns)}</li>
           ))}
         </ol>
       </div>
@@ -136,8 +136,9 @@ class Contact extends React.Component {
     )
   }
   render() {
+    const { contact } = this.props;
     return (
-      <li>
+      <li key={contact.id}>
         {this.renderNames()}
         {this.renderPronouns()}
         {this.renderEmails()}
@@ -165,6 +166,7 @@ export default createFragmentContainer(Contact, {
         note
       }
       pronounsList {
+        id
         subject
         object
         possessiveDeterminer
