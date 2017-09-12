@@ -1,3 +1,4 @@
+import './App.scss';
 import ContactList from './ContactList';
 import Login from './Login';
 

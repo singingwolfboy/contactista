@@ -20,13 +20,17 @@ class Login extends React.Component {
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <label>Username
-          <input name="username" type="text" />
-        </label>
-        <label>Password
-          <input name="password" type="password" />
-        </label>
-        <input type="submit" />
+        <div className="form-group">
+          <label>Username
+            <input name="username" type="text" className="form-control" />
+          </label>
+        </div>
+        <div className="form-group">
+          <label>Password
+            <input name="password" type="password" className="form-control" />
+          </label>
+        </div>
+        <button type="submit" className="btn btn-primary">Login</button>
       </form>
     );
   }
