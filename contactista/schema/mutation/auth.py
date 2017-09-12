@@ -1,13 +1,13 @@
 import re
 import graphene
 from graphene import relay
-from bradley.serializers import UserSerializer
-from bradley.models import db, User
-from bradley.jwt import (
+from contactista.serializers import UserSerializer
+from contactista.models import db, User
+from contactista.jwt import (
     jwt_token_for_user, jwt_token_from_request, refresh_jwt_token
 )
 from flask_security import login_user
-from bradley.schema.types import User as UserType, UserError
+from contactista.schema.types import User as UserType, UserError
 
 
 class Register(relay.ClientIDMutation):

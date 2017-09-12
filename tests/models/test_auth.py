@@ -1,6 +1,6 @@
 import pytest
 import sqlalchemy as sa
-from bradley.models import db, User
+from contactista.models import db, User
 
 
 def test_username_unique(session):

@@ -26,7 +26,7 @@ def get_requirements(path):
 
 
 version = ''
-with open('bradley/__init__.py', 'r') as fd:
+with open('contactista/__init__.py', 'r') as fd:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
                         fd.read(), re.MULTILINE).group(1)
 
@@ -35,13 +35,13 @@ if not version:
 
 
 setup(
-    name="Bradley",
+    name="Contactista",
     version=version,
     description="A Personal Relationship Management (PRM) system",
     long_description=open('README.rst').read(),
     author="David Baumgold",
     author_email="david@davidbaumgold.com",
-    url="https://github.com/singingwolfboy/bradley",
+    url="https://github.com/singingwolfboy/contactista",
     packages=find_packages(),
     install_requires=get_requirements("requirements.txt"),
     tests_require=get_requirements("dev-requirements.txt"),

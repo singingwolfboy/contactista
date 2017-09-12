@@ -16,12 +16,12 @@ security = Security()
 
 # Now we can import the models.
 
-from bradley.models.auth import User, Role
-from bradley.models.contacts import (
+from contactista.models.auth import User, Role
+from contactista.models.contacts import (
     Contact, ContactName, ContactPronouns, ContactEmail
 )
-from bradley.models.tag import Tag, ContactTag
-from bradley.models.shared import Pronouns
+from contactista.models.tag import Tag, ContactTag
+from contactista.models.shared import Pronouns
 
 
 def shell_context():

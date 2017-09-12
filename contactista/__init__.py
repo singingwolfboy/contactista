@@ -1,12 +1,12 @@
 from flask import Flask
-from bradley.models import db, alembic, security
-from bradley.models import shell_context as shell_context_models
-from bradley.models.auth import user_datastore
-from bradley.serializers import shell_context as shell_context_serializers
-from bradley.views.api import blueprint as api_bp
-from bradley.admin import admin, admin_context
-from bradley.jwt import user_from_jwt_request
-from bradley.cli import graphql
+from contactista.models import db, alembic, security
+from contactista.models import shell_context as shell_context_models
+from contactista.models.auth import user_datastore
+from contactista.serializers import shell_context as shell_context_serializers
+from contactista.views.api import blueprint as api_bp
+from contactista.admin import admin, admin_context
+from contactista.jwt import user_from_jwt_request
+from contactista.cli import graphql
 
 
 __version__ = "0.0.1"

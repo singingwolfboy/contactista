@@ -1,6 +1,6 @@
 import pytest
-from bradley.models import db, User, Contact
-from bradley.serializers import UserSerializer, ContactSerializer
+from contactista.models import db, User, Contact
+from contactista.serializers import UserSerializer, ContactSerializer
 
 pytestmark = pytest.mark.usefixtures("app")
 

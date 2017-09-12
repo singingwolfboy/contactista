@@ -1,10 +1,10 @@
 import graphene
 from graphene import relay
 from flask_security import current_user
-from bradley.models import db, Contact
-from bradley.schema.types import UserError
-from bradley.schema.types import Contact as ContactType
-from bradley.serializers import ContactSerializer
+from contactista.models import db, Contact
+from contactista.schema.types import UserError
+from contactista.schema.types import Contact as ContactType
+from contactista.serializers import ContactSerializer
 from .input import PronounsInput, ContactNameInput, ContactEmailInput
 
 class CreateContact(relay.ClientIDMutation):

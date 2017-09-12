@@ -1,7 +1,7 @@
 import pytest
 from colour import Color
-from bradley.models import db, User, Contact, Tag
-from bradley.jwt import jwt_token_for_user
+from contactista.models import db, User, Contact, Tag
+from contactista.jwt import jwt_token_for_user
 
 
 def test_graphiql_enabled(client):
@@ -100,7 +100,7 @@ def test_basic_contacts(client):
 @pytest.mark.usefixtures("session")
 def test_login(client, mocker):
     get_mock_token = mocker.patch(
-      "bradley.schema.mutation.auth.jwt_token_for_user",
+      "contactista.schema.mutation.auth.jwt_token_for_user",
       return_value=b"faketoken",
     )
     user = User(username="test")

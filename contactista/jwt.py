@@ -1,7 +1,7 @@
 import datetime
 import jwt
 from flask import current_app
-from bradley.models.auth import User
+from contactista.models.auth import User
 
 
 JWT_HEADER_NAME = 'Authorization'

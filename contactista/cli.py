@@ -1,6 +1,6 @@
 import click
 import json
-from bradley.schema import schema
+from contactista.schema import schema
 
 
 @click.group()

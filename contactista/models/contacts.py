@@ -1,9 +1,9 @@
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.ext.associationproxy import association_proxy
-from bradley.models import db
-from bradley.models.auth import User
-from bradley.models.shared import Pronouns
-from bradley.models.util import CategoryMap
+from contactista.models import db
+from contactista.models.auth import User
+from contactista.models.shared import Pronouns
+from contactista.models.util import CategoryMap
 
 
 # relationship cascade, needed to allow deleting from category maps

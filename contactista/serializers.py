@@ -4,11 +4,11 @@ from marshmallow_sqlalchemy import ModelSchemaOpts, ModelSchema as BaseModelSche
 from marshmallow_sqlalchemy import field_for
 from marshmallow_sqlalchemy.fields import get_schema_for_field
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from bradley.models import db
-from bradley.models.auth import User, Role
-from bradley.models.contacts import Contact, ContactName, ContactEmail, ContactPronouns
-from bradley.models.tag import Tag, ContactTag
-from bradley.models.shared import Pronouns
+from contactista.models import db
+from contactista.models.auth import User, Role
+from contactista.models.contacts import Contact, ContactName, ContactEmail, ContactPronouns
+from contactista.models.tag import Tag, ContactTag
+from contactista.models.shared import Pronouns
 
 
 class BaseOpts(ModelSchemaOpts):

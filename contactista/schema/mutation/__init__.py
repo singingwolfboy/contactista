@@ -1,9 +1,9 @@
 import graphene
-from bradley.schema.mutation.auth import Login, Register, RefreshToken
-from bradley.schema.mutation.contacts import (
+from contactista.schema.mutation.auth import Login, Register, RefreshToken
+from contactista.schema.mutation.contacts import (
     CreateContact, MutateContact, DestroyContact
 )
-from bradley.schema.mutation.tag import (
+from contactista.schema.mutation.tag import (
     CreateTag, MutateTag, DestroyTag
 )
 

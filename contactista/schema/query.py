@@ -1,7 +1,7 @@
 import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyConnectionField
-from bradley.schema.types import User, Pronouns
+from contactista.schema.types import User, Pronouns
 from flask_security import current_user
 
 

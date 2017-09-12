@@ -1,7 +1,7 @@
-Bradley Client
-==============
+Contactista Client
+==================
 
-This is the client application for Bradley. It is written in React_, and uses
+This is the client application for Contactista. It is written in React_, and uses
 Relay_ to interact with the GraphQL API exposed by the server.
 
 To build the client, you must first export the GraphQL schema defined in Flask,

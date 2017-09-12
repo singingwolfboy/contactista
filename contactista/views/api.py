@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask_graphql import GraphQLView as BaseGraphQLView
 from flask_login import current_user
-from bradley.schema import schema
+from contactista.schema import schema
 
 
 class GraphQLView(BaseGraphQLView):

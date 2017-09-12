@@ -1,8 +1,8 @@
 import json
 import os
 import pytest
-from bradley import create_app
-from bradley.models import db as _db, Role, Pronouns
+from contactista import create_app
+from contactista.models import db as _db, Role, Pronouns
 from testing.postgresql import Postgresql
 
 # http://spotofdata.com/flask-testing/
@@ -58,7 +58,7 @@ def seed_database(session):
 
     pronouns_fixture_path = os.path.join(
         os.path.dirname(os.path.dirname(__file__)),
-        "bradley",
+        "contactista",
         "fixtures",
         "pronouns.json",
     )

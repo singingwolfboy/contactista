@@ -7,7 +7,7 @@ from graphene_sqlalchemy.converter import (
     convert_sqlalchemy_type, get_column_doc, is_column_nullable
 )
 from sqlalchemy_utils import ColorType
-from bradley import models
+from contactista import models
 
 
 @convert_sqlalchemy_type.register(ColorType)

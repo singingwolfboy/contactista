@@ -18,7 +18,7 @@ class App extends React.Component {
     }
     return (
       <div>
-        <h1>Bradley Contacts</h1>
+        <h1>Contactista</h1>
         {body}
       </div>
     );

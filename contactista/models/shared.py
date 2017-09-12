@@ -1,4 +1,4 @@
-from bradley.models import db
+from contactista.models import db
 
 
 class Pronouns(db.Model):

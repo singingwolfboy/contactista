@@ -1,4 +1,4 @@
-from bradley.models import db
+from contactista.models import db
 from flask_security import (
     UserMixin, RoleMixin, SQLAlchemyUserDatastore
 )

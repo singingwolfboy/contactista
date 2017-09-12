@@ -3,10 +3,10 @@ import graphene
 from graphene import relay
 from flask_security import current_user
 from sqlalchemy.exc import IntegrityError
-from bradley.models import db, Tag
-from bradley.schema.types import UserError
-from bradley.schema.types import Tag as TagType
-from bradley.serializers import TagSerializer
+from contactista.models import db, Tag
+from contactista.schema.types import UserError
+from contactista.schema.types import Tag as TagType
+from contactista.serializers import TagSerializer
 
 class CreateTag(relay.ClientIDMutation):
     """

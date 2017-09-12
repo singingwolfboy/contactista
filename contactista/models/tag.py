@@ -4,11 +4,11 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy_utils import ColorType
 from colour import RGB_color_picker
-from bradley.models import db
-from bradley.models.auth import User
-from bradley.models.contacts import Contact
-from bradley.models.shared import Pronouns
-from bradley.models.util import CategoryMap
+from contactista.models import db
+from contactista.models.auth import User
+from contactista.models.contacts import Contact
+from contactista.models.shared import Pronouns
+from contactista.models.util import CategoryMap
 
 
 def random_color(context):

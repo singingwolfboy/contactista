@@ -4,7 +4,7 @@ from flask_admin.contrib.sqla import ModelView as BaseModelView
 from flask_admin import helpers as admin_helpers
 from wtforms import PasswordField
 from flask_security import current_user, login_required
-from bradley.models import (
+from contactista.models import (
     db, security, User, Role,
     Contact, ContactName, ContactPronouns, ContactEmail
 )
