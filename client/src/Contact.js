@@ -136,15 +136,14 @@ class Contact extends React.Component {
     )
   }
   render() {
-    const { contact } = this.props;
     return (
-      <li key={contact.id}>
+      <div>
         {this.renderNames()}
         {this.renderPronouns()}
         {this.renderEmails()}
         {this.renderTags()}
         {this.renderNote()}
-      </li>
+      </div>
     );
   }
 }
@@ -173,12 +172,6 @@ export default createFragmentContainer(Contact, {
       }
       note
       noteFormat
-    }
-  `,
-  viewer: graphql`
-    fragment Contact_viewer on User {
-      id
-      username
     }
   `,
 });

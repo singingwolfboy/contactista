@@ -1,5 +1,5 @@
 import './App.scss';
-import ContactList from './ContactList';
+import ContactBookGrid from './ContactBookGrid';
 import Login from './Login';
 
 import React from 'react';
@@ -13,7 +13,7 @@ class App extends React.Component {
     const { viewer, refreshEnvironment } = this.props;
     let body;
     if (viewer) {
-      body = <ContactList viewer={viewer} />
+      body = <ContactBookGrid viewer={viewer} />
     } else {
       body = <Login refreshEnvironment={refreshEnvironment} />
     }
@@ -31,7 +31,7 @@ export default createFragmentContainer(App, {
     fragment App_viewer on User {
       id,
       username,
-      ...ContactList_viewer,
+      ...ContactBookGrid_viewer,
     }
   `,
 });
