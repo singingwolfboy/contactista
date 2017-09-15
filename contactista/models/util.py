@@ -1,9 +1,10 @@
 from sqlalchemy.util import OrderedDict
 from sqlalchemy.orm.collections import MappedCollection
+from werkzeug.datastructures import OrderedMultiDict
 
 
 # http://docs.sqlalchemy.org/en/latest/orm/collections.html#custom-dictionary-based-collections
-class CategoryMap(OrderedDict, MappedCollection):
+class CategoryMap(OrderedMultiDict, MappedCollection):
     """
     Holds objects keyed by the 'category' attribute
     with insert order maintained.
@@ -11,4 +12,4 @@ class CategoryMap(OrderedDict, MappedCollection):
 
     def __init__(self, *args, **kw):
         MappedCollection.__init__(self, keyfunc=lambda obj: obj.category)
-        OrderedDict.__init__(self, *args, **kw)
+        OrderedMultiDict.__init__(self, *args, **kw)

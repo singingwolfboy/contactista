@@ -14,7 +14,7 @@ class Contact(db.Model):
     """
     A person in your contact book.
     """
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     user = db.relationship(User, backref=db.backref("contacts"))
     note = db.Column(
@@ -170,14 +170,9 @@ class ContactPronouns(db.Model):
 
 
 class ContactName(db.Model):
-    contact_id = db.Column(
-        db.Integer, db.ForeignKey(Contact.id),
-        primary_key=True,
-    )
-    category = db.Column(
-        db.String(50),
-        primary_key=True,
-    )
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    contact_id = db.Column(db.Integer, db.ForeignKey(Contact.id))
+    category = db.Column(db.String(50))
     position = db.Column(
         db.Integer, db.Sequence('contact_name_position'),
         nullable=False,
@@ -196,14 +191,9 @@ class ContactName(db.Model):
 
 
 class ContactEmail(db.Model):
-    contact_id = db.Column(
-        db.Integer, db.ForeignKey(Contact.id),
-        primary_key=True,
-    )
-    category = db.Column(
-        db.String(50),
-        primary_key=True,
-    )
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    contact_id = db.Column(db.Integer, db.ForeignKey(Contact.id))
+    category = db.Column(db.String(50))
     position = db.Column(
         db.Integer, db.Sequence('contact_email_position'),
         nullable=False,
